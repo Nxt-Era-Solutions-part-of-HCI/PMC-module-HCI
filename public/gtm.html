@@ -202,7 +202,7 @@ header{padding:20px 40px;display:flex;align-items:center;justify-content:space-b
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
   <div style="display:flex;align-items:center;gap:14px">
-    <div class="lang-toggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">🇳🇱 NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">🇬🇧 EN</button></div>
+    <div class="lang-toggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
     <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
   </div>
 </header>
@@ -443,7 +443,7 @@ document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'st
 function completeGTM(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
 document.getElementById('progressLabel').textContent='5 / 5 afgerond — GTM Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-alert('GTM Voorbereiding afgerond! ✓\n\nGereed voor Fase 3: Outreach & Engagement.')}
+alert('GTM Voorbereiding afgerond! ✓\n\nGereed voor Fase 3: Outreach & Engagement.\nDeze module wordt binnenkort toegevoegd.')}
 
 /* ═══ AI ASSISTANT ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;

@@ -29,6 +29,10 @@ header { padding:20px 40px; display:flex; align-items:center; justify-content:sp
 .hci-name { font-size:14px; font-weight:500; color:var(--text-bright); letter-spacing:-.2px; }
 .hci-name span { color:var(--text-dim); font-weight:300; }
 #mainLangToggle .ai-lang-btn { padding:5px 12px; font-size:12px; }
+.lang-toggle{display:flex;gap:2px;background:rgba(0,0,0,.3);padding:3px;border-radius:6px;border:1px solid rgba(255,255,255,.06)}
+.lang-btn{padding:5px 12px;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;background:transparent;color:var(--text-dim)}
+.lang-btn.active{background:var(--hci-gold);color:var(--bg-deep)}
+.lang-btn:hover:not(.active){color:var(--text)}
 .hci-badge { font-family:'Geist Mono',monospace; font-size:10px; padding:5px 12px; border-radius:4px; background:var(--hci-gold-dim); color:var(--hci-gold); border:1px solid var(--hci-gold-border); letter-spacing:.5px; }
 
 /* CONTAINER */
@@ -213,7 +217,7 @@ header { padding:20px 40px; display:flex; align-items:center; justify-content:sp
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
   <div style="display:flex;align-items:center;gap:14px;">
-    <div class="ai-lang-toggle" id="mainLangToggle"><button class="ai-lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">🇳🇱 NL</button><button class="ai-lang-btn" id="mainLangEN" onclick="setPageLang('en')">🇬🇧 EN</button></div>
+    <div class="lang-toggle" id="mainLangToggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
     <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
   </div>
 </header>
@@ -455,7 +459,7 @@ document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'st
 function completePMC(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
 document.getElementById('progressLabel').textContent='5 / 5 afgerond — PMC Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-alert('PMC Creatie afgerond! ✓\n\nGereed voor Fase 2: GTM Voorbereiding.')}
+if(confirm('PMC Creatie afgerond! ✓\n\nDoorschakelen naar Fase 2: GTM Voorbereiding?')){window.location.href='/gtm'}}
 
 /* ═══ AI ASSISTANT ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;
@@ -469,8 +473,8 @@ qm:{help:'Explain what I need to do in this step and give practical tips.',examp
 err:'⚠️ Could not connect to Claude. Check API key or try again.',nokey:'⚠️ <strong>API key not configured.</strong><br><br>To activate the AI Assistant, open this file in a code editor and enter your Claude API key at <code>const API_KEY = \'\'</code>.<br><br>Get an API key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--hci-gold)">console.anthropic.com</a>.',
 u:'You',a:'HCI Assistant',sl:'en-GB',vd:'Microphone denied.',vu:'Speech not supported. Try Chrome.'}};
 
-// ▸▸▸ API ENDPOINT (server-side proxy via Netlify Function) ◂◂◂
-const API_ENDPOINT = '/api/chat';
+// ▸▸▸ ENTER YOUR CLAUDE API KEY HERE ◂◂◂
+const API_KEY = '';
 
 function getSysPrompt(){const s=currentStep+1,sn=stepNames[aiLang][currentStep],l=aiLang==='nl'?'Dutch':'English';
 return `You are the HCI AI Assistant in the PMC (Product-Market Combination) Creation Module of HES Consultancy International.
@@ -514,11 +518,11 @@ el.appendChild(d);el.scrollTop=el.scrollHeight}
 async function aiSend(){const inp=document.getElementById('aiInput'),msg=inp.value.trim();if(!msg)return;
 aiAddMsg(msg,'user');inp.value='';inp.style.height='auto';aiHistory.push({role:'user',content:msg});
 const typ=document.getElementById('aiTyping');typ.classList.add('active');document.getElementById('aiSendBtn').disabled=true;document.getElementById('aiVoiceBtn').disabled=true;
-try{
-const res=await fetch(API_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
-body:JSON.stringify({system:getSysPrompt(),messages:aiHistory.slice(-10),language:aiLang})});
-const data=await res.json();if(!res.ok||data.error)throw new Error(data.error||'API error');
-const reply=data.reply;aiHistory.push({role:'assistant',content:reply});
+try{if(!API_KEY){typ.classList.remove('active');aiAddMsg(aiTxt[aiLang].nokey,'assistant');return}
+const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:getSysPrompt(),messages:aiHistory.slice(-10)})});
+const data=await res.json();if(!res.ok||data.error)throw new Error(data.error?.message||'API error');
+const reply=data.content.map(c=>c.text||'').join('\n');aiHistory.push({role:'assistant',content:reply});
 typ.classList.remove('active');aiAddMsg(fmtReply(reply),'assistant')}
 catch(e){console.error('AI:',e);typ.classList.remove('active');aiAddMsg(aiTxt[aiLang].err,'assistant')}
 finally{document.getElementById('aiSendBtn').disabled=false;document.getElementById('aiVoiceBtn').disabled=false}}
