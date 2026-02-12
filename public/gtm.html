@@ -443,7 +443,7 @@ document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'st
 function completeGTM(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
 document.getElementById('progressLabel').textContent='5 / 5 afgerond — GTM Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-alert('GTM Voorbereiding afgerond! ✓\n\nGereed voor Fase 3: Outreach & Engagement.\nDeze module wordt binnenkort toegevoegd.')}
+if(confirm('GTM Voorbereiding afgerond! ✓\n\nDoorschakelen naar Fase 3: Outreach & Engagement?')){window.location.href='/outreach'}}
 
 /* ═══ AI ASSISTANT ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;

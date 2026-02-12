@@ -22,6 +22,11 @@
   to = "/gtm.html"
   status = 200
 
+[[redirects]]
+  from = "/outreach"
+  to = "/outreach.html"
+  status = 200
+
 # Security headers
 [[headers]]
   for = "/*"
