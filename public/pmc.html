@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -219,7 +219,7 @@ header { padding:20px 40px; display:flex; align-items:center; justify-content:sp
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
   <div style="display:flex;align-items:center;gap:14px;">
-    <div class="lang-toggle" id="mainLangToggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
+    <div class="lang-toggle" id="mainLangToggle"><button class="lang-btn" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn active" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
     <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
   </div>
 </header>
@@ -465,7 +465,7 @@ document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');
 if(confirm('PMC Creatie afgerond! ✓\n\nDoorschakelen naar Fase 2: GTM Voorbereiding?')){window.location.href='/gtm'}}
 
 /* ═══ AI ASSISTANT ═══ */
-let aiLang='nl',aiHistory=[],aiOpen=false;
+let aiLang='en',aiHistory=[],aiOpen=false;
 
 const aiTxt={nl:{ph:'Stel je vraag over de PMC...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Leg uit wat ik moet doen in deze stap en geef praktische tips.',example:'Geef een concreet ingevuld voorbeeld voor deze PMC stap, voor een B2B tech bedrijf dat de EU markt betreedt.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
@@ -504,7 +504,7 @@ updateCtx();if(aiRec)aiRec.lang=t.sl}
 
 /* Voice */
 let aiRec=null,aiRecording=false;
-if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;
+if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='en-GB';aiRec.continuous=false;aiRec.interimResults=false;
 aiRec.onstart=()=>{aiRecording=true;document.getElementById('aiVoiceBtn').classList.add('recording');document.getElementById('aiVoiceIcon').textContent='🔴'};
 aiRec.onresult=e=>{document.getElementById('aiInput').value=e.results[0][0].transcript;setTimeout(()=>aiSend(),400)};
 aiRec.onerror=e=>{aiResetV();if(e.error==='not-allowed')alert(aiTxt[aiLang].vd)};aiRec.onend=aiResetV}
@@ -533,7 +533,7 @@ function fmtReply(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').re
 document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
 
 /* ═══ PAGE LANGUAGE TOGGLE ═══ */
-let pageLang='nl';
+let pageLang='en';
 const pageI18n={
 nl:{
   back:'← Terug naar overzicht',
@@ -721,6 +721,7 @@ applyPageLang=function(){
   });
 };
 })();
+applyPageLang();
 
 </script>
 </body>

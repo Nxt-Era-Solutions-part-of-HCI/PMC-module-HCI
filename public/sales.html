@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -213,7 +213,7 @@ header{padding:20px 40px;display:flex;align-items:center;justify-content:space-b
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
   <div style="display:flex;align-items:center;gap:14px">
-    <div class="lang-toggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
+    <div class="lang-toggle"><button class="lang-btn" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn active" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
     <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
   </div>
 </header>
@@ -491,7 +491,7 @@ header{padding:20px 40px;display:flex;align-items:center;justify-content:space-b
 </div>
 
 <script>
-let currentStep=0;const totalSteps=5;const completedSteps=new Set();let pageLang='nl';
+let currentStep=0;const totalSteps=5;const completedSteps=new Set();let pageLang='en';
 const stepNames={nl:['CMO→FMO Kwalificatie','Proposal & Pricing','Negotiation & Objections','Co-Sell & Partners','Deal Close & Handover'],en:['CMO→FMO Qualification','Proposal & Pricing','Negotiation & Objections','Co-Sell & Partners','Deal Close & Handover']};
 
 /* ═══ FULL i18n DATA ═══ */
@@ -683,7 +683,7 @@ document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');
 alert('Sales Executie afgerond! ✓\n\n🎉 Gefeliciteerd! Alle 4 HCI modules doorlopen.\nVan PMC Creatie → GTM Voorbereiding → Outreach → Deal Close.\n\nNeem contact op voor het plannen van de volgende engagement cycle.')}
 
 /* ═══ AI ═══ */
-let aiLang='nl',aiHistory=[],aiOpen=false;
+let aiLang='en',aiHistory=[],aiOpen=false;
 const aiTxt={nl:{ph:'Stel je vraag over sales executie...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Leg uit wat ik moet doen in deze sales executie stap en geef praktische tips.',example:'Geef een concreet voorbeeld voor deze stap, inclusief templates die ik kan aanpassen.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
 err:'⚠️ Kon geen verbinding maken. Probeer opnieuw.',u:'Jij',a:'HCI Assistant',sl:'nl-NL',vd:'Microfoon geweigerd.',vu:'Spraak niet ondersteund.'},
@@ -862,7 +862,7 @@ function applyStep5(p,s){
 }
 
 let aiRec=null,aiRecording=false;
-if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;
+if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='en-GB';aiRec.continuous=false;aiRec.interimResults=false;
 aiRec.onstart=()=>{aiRecording=true;document.getElementById('aiVoiceBtn').classList.add('recording');document.getElementById('aiVoiceIcon').textContent='🔴'};
 aiRec.onresult=e=>{document.getElementById('aiInput').value=e.results[0][0].transcript;setTimeout(()=>aiSend(),400)};
 aiRec.onerror=e=>{aiResetV();if(e.error==='not-allowed')alert(aiTxt[aiLang].vd)};aiRec.onend=aiResetV}
@@ -885,6 +885,7 @@ finally{document.getElementById('aiSendBtn').disabled=false;document.getElementB
 
 function fmtReply(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>')}
 document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
+applyPageLang();
 </script>
 </body>
 </html>

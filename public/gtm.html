@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -202,7 +202,7 @@ header{padding:20px 40px;display:flex;align-items:center;justify-content:space-b
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
   <div style="display:flex;align-items:center;gap:14px">
-    <div class="lang-toggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
+    <div class="lang-toggle"><button class="lang-btn" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn active" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
     <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
   </div>
 </header>
@@ -446,7 +446,7 @@ document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');
 if(confirm(pageLang==='en'?'GTM Preparation complete! ✓\n\nProceed to Phase 3: Outreach & Engagement?':'GTM Voorbereiding afgerond! ✓\n\nDoorschakelen naar Fase 3: Outreach & Engagement?')){window.location.href='/outreach'}}
 
 /* ═══ AI ASSISTANT ═══ */
-let aiLang='nl',aiHistory=[],aiOpen=false;
+let aiLang='en',aiHistory=[],aiOpen=false;
 const aiTxt={nl:{ph:'Stel je vraag over GTM...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Leg uit wat ik moet doen in deze GTM stap en geef praktische tips.',example:'Geef een concreet voorbeeld voor deze stap, voor een B2B tech bedrijf dat de EU markt betreedt.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
 err:'⚠️ Kon geen verbinding maken met Claude. Probeer opnieuw.',u:'Jij',a:'HCI Assistant',sl:'nl-NL',vd:'Microfoon geweigerd.',vu:'Spraak niet ondersteund.'},
@@ -480,7 +480,7 @@ document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-b
 function setPageLang(l){pageLang=l;document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l);applyGtmLang(l)}
 
 let aiRec=null,aiRecording=false;
-if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;
+if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='en-GB';aiRec.continuous=false;aiRec.interimResults=false;
 aiRec.onstart=()=>{aiRecording=true;document.getElementById('aiVoiceBtn').classList.add('recording');document.getElementById('aiVoiceIcon').textContent='🔴'};
 aiRec.onresult=e=>{document.getElementById('aiInput').value=e.results[0][0].transcript;setTimeout(()=>aiSend(),400)};
 aiRec.onerror=e=>{aiResetV();if(e.error==='not-allowed')alert(aiTxt[aiLang].vd)};aiRec.onend=aiResetV}
@@ -504,7 +504,7 @@ finally{document.getElementById('aiSendBtn').disabled=false;document.getElementB
 function fmtReply(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>')}
 document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
 
-var pageLang='nl';
+var pageLang='en';
 var gtmI18n={
 nl:{back:'← Terug naar overzicht',kicker:'Fase 2 — Go-to-Market',title:'GTM <em>Voorbereiding</em>',
   subtitle:'Van PMC naar markt. Pitch deck bouwen, CRM pipeline opzetten, Campaign in a Box samenstellen, en de database klaarmaken voor outreach.',
@@ -575,10 +575,12 @@ nl:{
   s4:{bt:['Data Cleanup Stappenplan','Database Kwaliteitsmetrieken'],
     items:['<strong>Stap 1 — Deduplicatie:</strong> Verwijder dubbele contacten (naam + organisatie combinatie). Check op verouderde bedrijfsnamen','<strong>Stap 2 — ICP Herscoring:</strong> Pas ICP scores aan op basis van PMC doelmarkt. A-Enterprise, B-Mid-Market, C-Standaard','<strong>Stap 3 — Email Enrichment:</strong> Vul ontbrekende emails aan via Apollo, Hunter.io, of Clearbit. Target: >80% dekking','<strong>Stap 4 — LinkedIn Matching:</strong> Koppel contacten aan LinkedIn profielen. Essentieel voor multi-channel outreach','<strong>Stap 5 — Segmentatie:</strong> Label contacten per industrie, functie, en beslissingsbevoegdheid','<strong>Stap 6 — Import naar CRM:</strong> Schone data importeren in HubSpot/Dynamics met alle custom velden'],
     labels:['Totaal Contacten','Email Dekking (%)','LinkedIn Match (%)','ICP A-Contacten','Engagement Baseline'],
+    ph:['Na cleanup. Hoeveel unieke, relevante contacten?','Target: >80%. Huidig: check na enrichment','Target: >60%. Nodig voor multi-channel cadence','Hoeveel enterprise-grade targets na herscoring?','Bestaande relaties, eerdere interacties, warm vs koud?'],
     tip:'Begin met je Top-50 accounts (ICP A). Handmatig enrichen en valideren. De rest automatiseren via tooling. Kwaliteit > kwantiteit bij de eerste campagneronde.'},
   s5:{bt:['Enablement Documenten','Per Document Invullen','GTM Readiness Checklist'],
     items:['<strong>Battle Card (1-pager):</strong> Markt, pijn, oplossing, differentiators, pricing, vs concurrenten. Altijd bij de hand','<strong>Objection Handling Guide:</strong> Top-10 bezwaren + response scripts. "Te duur", "niet nu", "al een leverancier", etc.','<strong>Discovery Questions:</strong> Gestructureerde vragenlijst voor intake/kwalificatie gesprekken. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simpele tool waarmee prospect zijn business case kan doorrekenen','<strong>Reference Sheet:</strong> Klant referenties, case studies, benchmark resultaten per segment','<strong>Proposal Template:</strong> Gestandaardiseerd voorstel met Sprint A/B/C opties, SLA, commerciële voorwaarden'],
     labels:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Beschikbare Referenties'],
+    ph:['3 punten waarop je verschilt van alternatieven','Welke bezwaren hoor je het vaakst? Wat is je response?','Welke 5 vragen moet je ALTIJD stellen in een eerste gesprek?','Welke KPI\'s verbeter je? Uren bespaard, kosten gereduceerd, risico verlaagd?','Welke klanten kunnen als referentie dienen? Per segment?'],
     checks:['Pitch Deck (5 slides) klaar in twee varianten (presentatie + leave-behind)','CRM pipeline geconfigureerd met stadia, scoring, en rapportage','Campaign in a Box compleet (email + LinkedIn + phone + Revynu)','Database schoongemaakt, verrijkt, en geïmporteerd in CRM','Sales Enablement Kit beschikbaar (battle card, objections, discovery, ROI, template)','Top-50 target accounts geïdentificeerd en gevalideerd','GTM gereed voor overdracht naar <strong>Outreach & Engagement</strong> (Fase 3)']}
 },
 en:{
@@ -601,10 +603,12 @@ en:{
   s4:{bt:['Data Cleanup Step Plan','Database Quality Metrics'],
     items:['<strong>Step 1 — Deduplication:</strong> Remove duplicate contacts (name + organisation combo). Check for outdated company names','<strong>Step 2 — ICP Rescoring:</strong> Adjust ICP scores based on PMC target market. A-Enterprise, B-Mid-Market, C-Standard','<strong>Step 3 — Email Enrichment:</strong> Fill missing emails via Apollo, Hunter.io, or Clearbit. Target: >80% coverage','<strong>Step 4 — LinkedIn Matching:</strong> Link contacts to LinkedIn profiles. Essential for multi-channel outreach','<strong>Step 5 — Segmentation:</strong> Label contacts by industry, function, and decision authority','<strong>Step 6 — Import to CRM:</strong> Import clean data into HubSpot/Dynamics with all custom fields'],
     labels:['Total Contacts','Email Coverage (%)','LinkedIn Match (%)','ICP A-Contacts','Engagement Baseline'],
+    ph:['After cleanup. How many unique, relevant contacts?','Target: >80%. Current: check after enrichment','Target: >60%. Required for multi-channel cadence','How many enterprise-grade targets after rescoring?','Existing relationships, prior interactions, warm vs cold?'],
     tip:'Start with your Top-50 accounts (ICP A). Manually enrich and validate. Automate the rest via tooling. Quality > quantity in the first campaign round.'},
   s5:{bt:['Enablement Documents','Fill In Per Document','GTM Readiness Checklist'],
     items:['<strong>Battle Card (1-pager):</strong> Market, pain, solution, differentiators, pricing, vs competitors. Always at hand','<strong>Objection Handling Guide:</strong> Top-10 objections + response scripts. "Too expensive", "not now", "already have a vendor", etc.','<strong>Discovery Questions:</strong> Structured questionnaire for intake/qualification calls. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simple tool for prospects to calculate their business case','<strong>Reference Sheet:</strong> Customer references, case studies, benchmark results per segment','<strong>Proposal Template:</strong> Standardized proposal with Sprint A/B/C options, SLA, commercial terms'],
     labels:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Available References'],
+    ph:['3 points that differentiate you from alternatives','Which objections do you hear most? What is your response?','Which 5 questions must you ALWAYS ask in a first meeting?','Which KPIs do you improve? Hours saved, costs reduced, risk lowered?','Which clients can serve as reference? Per segment?'],
     checks:['Pitch Deck (5 slides) ready in two variants (presentation + leave-behind)','CRM pipeline configured with stages, scoring, and reporting','Campaign in a Box complete (email + LinkedIn + phone + Revynu)','Database cleaned, enriched, and imported into CRM','Sales Enablement Kit available (battle card, objections, discovery, ROI, template)','Top-50 target accounts identified and validated','GTM ready for handover to <strong>Outreach & Engagement</strong> (Phase 3)']}
 }
 };
@@ -637,16 +641,17 @@ applyGtmLang=function(l){
     }
     if(idx===3){
       if(blocks[0])blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.items&&s.items[i])li.innerHTML=s.items[i]});
-      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i]});
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph&&s.ph[i])vl.textContent=s.ph[i]});
       var tip=panel.querySelector('.tip-box .tip-text');if(tip&&s.tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
     }
     if(idx===4){
       if(blocks[0])blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.items&&s.items[i])li.innerHTML=s.items[i]});
-      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i]});
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph&&s.ph[i])vl.textContent=s.ph[i]});
       if(blocks[2])blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checks&&s.checks[i])li.innerHTML=s.checks[i]});
     }
   });
 };
+applyGtmLang(pageLang);
 
 </script>
 </body>
