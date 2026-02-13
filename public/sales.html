@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Executie Module + AI — HES Consultancy International</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hci-gold:#c8a55a;--hci-gold-light:#e0c882;--hci-gold-dim:rgba(200,165,90,.15);--hci-gold-border:rgba(200,165,90,.25);
+  --bg-deep:#08090c;--bg:#0d0f14;--bg-card:#13151c;--bg-card-alt:#181a22;--bg-elevated:#1c1e28;
+  --border:rgba(255,255,255,.06);--text:#c8c6d4;--text-dim:#6e6d7a;--text-bright:#f0eef5;--white:#fff;
+  --success:#4ade80;--warning:#fbbf24;--info:#60a5fa;--error:#f87171;--pink:#f472b6;
+  --phase-pmc:#c8a55a;--phase-gtm:#60a5fa;--phase-outreach:#4ade80;--phase-execute:#c8a55a;
+  --active-accent:var(--phase-execute);--active-dim:rgba(200,165,90,.1);--active-border:rgba(200,165,90,.25);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Outfit',sans-serif;background:var(--bg-deep);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;transition:margin-right .3s ease}
+body.ai-open{margin-right:420px}
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 800px 600px at 10% 20%,rgba(200,165,90,.03) 0%,transparent 70%),radial-gradient(ellipse 600px 800px at 90% 80%,rgba(200,165,90,.02) 0%,transparent 70%)}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:999;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E")}
+
+header{padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:relative;z-index:10;background:rgba(13,15,20,.8);backdrop-filter:blur(12px)}
+.hci-logo{display:flex;align-items:center;gap:14px}
+.hci-mark{width:38px;height:38px;border:2px solid var(--hci-gold);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;font-weight:500;color:var(--hci-gold)}
+.hci-name{font-size:14px;font-weight:500;color:var(--text-bright)}
+.lang-toggle{display:flex;gap:2px;background:rgba(0,0,0,.3);padding:3px;border-radius:6px;border:1px solid rgba(255,255,255,.06)}
+.lang-btn{padding:5px 12px;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;background:transparent;color:var(--text-dim)}
+.lang-btn.active{background:var(--hci-gold);color:var(--bg-deep)}
+.lang-btn:hover:not(.active){color:var(--text)}
+.hci-badge{font-family:'Geist Mono',monospace;font-size:10px;padding:5px 12px;border-radius:4px;background:var(--hci-gold-dim);color:var(--hci-gold);border:1px solid var(--hci-gold-border);letter-spacing:.5px}
+
+.container{max-width:1280px;margin:0 auto;padding:32px 40px;position:relative;z-index:10}
+.page-hero{margin-bottom:36px}
+.page-hero .kicker{font-family:'Geist Mono',monospace;font-size:11px;color:var(--active-accent);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px}
+.page-hero h1{font-family:'Instrument Serif',serif;font-size:42px;font-weight:400;color:var(--white);line-height:1.15;margin-bottom:10px}
+.page-hero h1 em{font-style:italic;color:var(--active-accent)}
+.page-hero .subtitle{font-size:15px;color:var(--text-dim);line-height:1.6;max-width:640px}
+.page-hero .back-link{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);text-decoration:none;margin-bottom:12px;transition:color .2s}
+.page-hero .back-link:hover{color:var(--hci-gold)}
+
+.journey-rail{display:flex;align-items:center;gap:0;margin-bottom:36px;padding:16px 20px;background:var(--bg-card);border-radius:12px;border:1px solid var(--border);overflow-x:auto}
+.journey-phase{display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none;color:inherit}
+.journey-phase:hover{background:rgba(255,255,255,.03)}
+.journey-phase .jp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid}
+.journey-phase .jp-text{font-size:12px;font-weight:500}
+.journey-phase .jp-sub{font-size:10px;color:var(--text-dim)}
+.journey-connector{width:32px;height:1px;flex-shrink:0;background:linear-gradient(90deg,var(--text-dim) 50%,transparent 50%);background-size:6px 1px}
+
+.progress-bar{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.progress-track{flex:1;height:4px;background:var(--bg-elevated);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--hci-gold),var(--hci-gold-light));border-radius:2px;transition:width .5s ease;width:0%}
+.progress-label{font-family:'Geist Mono',monospace;font-size:11px;color:var(--active-accent);white-space:nowrap}
+
+.steps-nav{display:flex;gap:4px;margin-bottom:28px}
+.step-tab{flex:1;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px}
+.step-tab:hover{border-color:rgba(255,255,255,.1);background:var(--bg-card-alt)}
+.step-tab.active{border-color:var(--hci-gold-border);background:var(--hci-gold-dim)}
+.step-tab.completed{border-color:rgba(74,222,128,.2)}
+.step-tab .st-num{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;font-weight:500;background:rgba(255,255,255,.04);color:var(--text-dim);flex-shrink:0;transition:all .2s}
+.step-tab.active .st-num{background:var(--hci-gold);color:var(--bg-deep)}
+.step-tab.completed .st-num{background:var(--success);color:var(--bg-deep)}
+.step-tab .st-label{font-size:11px;font-weight:500;color:var(--text-dim);line-height:1.3}
+.step-tab.active .st-label{color:var(--text-bright)}
+
+.step-panel{display:none;animation:fadeUp .3s ease}
+.step-panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.step-header-block{display:flex;align-items:flex-start;gap:20px;margin-bottom:28px}
+.step-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;background:var(--hci-gold-dim);border:1px solid var(--hci-gold-border);flex-shrink:0}
+.step-header-text h2{font-family:'Instrument Serif',serif;font-size:28px;font-weight:400;color:var(--white);margin-bottom:4px}
+.step-header-text .step-desc{font-size:14px;color:var(--text-dim);line-height:1.5}
+
+.content-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.content-grid.full{grid-template-columns:1fr}
+.block{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:border-color .2s}
+.block:hover{border-color:rgba(255,255,255,.08)}
+.block-title{font-family:'Geist Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.block-title .bt-dot{width:6px;height:6px;border-radius:50%;background:var(--hci-gold)}
+.action-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.action-list li{font-size:13px;line-height:1.65;padding-left:22px;position:relative;color:var(--text)}
+.action-list li::before{content:'';position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:2px;border:1.5px solid var(--hci-gold);background:transparent}
+.action-list li strong{color:var(--text-bright);font-weight:600}
+.canvas-field{margin-bottom:14px}
+.canvas-field:last-child{margin-bottom:0}
+.canvas-label{font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.canvas-value{font-size:13px;color:var(--text);background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:10px 14px;line-height:1.5;min-height:40px}
+.canvas-value.placeholder{color:var(--text-dim);font-style:italic}
+.tools-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tool-pill{font-family:'Geist Mono',monospace;font-size:10px;padding:4px 10px;border-radius:4px;background:rgba(255,255,255,.03);color:var(--text-dim);border:1px solid var(--border)}
+.tip-box{display:flex;gap:12px;padding:14px 18px;background:rgba(200,165,90,.06);border:1px solid var(--hci-gold-border);border-radius:8px;margin-top:16px;align-items:flex-start}
+.tip-box .tip-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.tip-box .tip-text{font-size:12px;color:var(--text);line-height:1.6}
+.tip-box .tip-text strong{color:var(--hci-gold-light)}
+.step-nav-buttons{display:flex;justify-content:space-between;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{padding:10px 22px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;border:none}
+.nav-btn.secondary{background:var(--bg-card);color:var(--text);border:1px solid var(--border)}
+.nav-btn.secondary:hover{border-color:rgba(255,255,255,.12);background:var(--bg-card-alt)}
+.nav-btn.primary{background:var(--hci-gold);color:var(--bg-deep);font-weight:600}
+.nav-btn.primary:hover{opacity:.9}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* Offer cards (from PMC) */
+.offer-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.offer-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:18px}
+.offer-card .oc-badge{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:14px;font-weight:600;margin-bottom:10px}
+.offer-card:nth-child(1) .oc-badge{background:rgba(96,165,250,.15);color:var(--info)}
+.offer-card:nth-child(2) .oc-badge{background:rgba(200,165,90,.15);color:var(--hci-gold)}
+.offer-card:nth-child(3) .oc-badge{background:rgba(74,222,128,.15);color:var(--success)}
+.offer-card .oc-title{font-size:14px;font-weight:600;color:var(--text-bright);margin-bottom:2px}
+.offer-card .oc-dur{font-family:'Geist Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:10px}
+.offer-card .oc-desc{font-size:12px;color:var(--text);margin-bottom:10px;line-height:1.5}
+.offer-card .oc-dels{list-style:none;display:flex;flex-direction:column;gap:4px}
+.offer-card .oc-dels li{font-size:11px;color:var(--text-dim);padding-left:16px;position:relative}
+.offer-card .oc-dels li::before{content:'→';position:absolute;left:0;font-size:10px;color:var(--hci-gold)}
+
+/* Score row (from PMC) */
+.score-row{display:grid;grid-template-columns:1fr 80px 60px auto;gap:12px;align-items:center;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:6px;border:1px solid var(--border)}
+.score-row.header{background:transparent;border:none;padding:4px 14px}
+.score-row .sr-label{font-size:12px;color:var(--text)}
+.score-row .sr-score{font-family:'Geist Mono',monospace;font-size:12px;color:var(--text-dim);text-align:center}
+.score-row .sr-weight{font-family:'Geist Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center}
+.score-row .sr-help{font-size:11px;color:var(--text-dim)}
+.score-row.header .sr-label,.score-row.header .sr-score,.score-row.header .sr-weight,.score-row.header .sr-help{font-size:10px;text-transform:uppercase;letter-spacing:.5px;font-weight:600;color:var(--hci-gold)}
+
+/* Metric cards */
+.metric-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.metric-card{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.metric-card .metric-value{font-family:'Geist Mono',monospace;font-size:22px;font-weight:600;color:var(--hci-gold);margin-bottom:4px}
+.metric-card .metric-label{font-size:11px;color:var(--text-dim)}
+
+/* CMO FMO visual */
+.cmo-fmo-visual{display:grid;grid-template-columns:1fr 40px 1fr;gap:12px;align-items:center;margin-bottom:16px}
+.cmo-box,.fmo-box{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:10px;padding:16px}
+.fmo-box{border-color:var(--hci-gold-border);background:rgba(200,165,90,.05)}
+.cmo-fmo-arrow{text-align:center;font-size:24px;color:var(--hci-gold)}
+.cmo-box h4,.fmo-box h4{font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
+.cmo-box h4{color:var(--text-dim)}
+.fmo-box h4{color:var(--hci-gold)}
+.cmo-box ul,.fmo-box ul{list-style:none;display:flex;flex-direction:column;gap:6px}
+.cmo-box ul li,.fmo-box ul li{font-size:12px;color:var(--text);padding-left:18px;position:relative}
+.cmo-box ul li::before{content:'→';position:absolute;left:0;color:var(--text-dim);font-size:11px}
+.fmo-box ul li::before{content:'✓';position:absolute;left:0;color:var(--hci-gold);font-size:11px}
+
+/* ═══ AI PANEL ═══ */
+.ai-fab{position:fixed;bottom:28px;right:28px;z-index:1000;width:60px;height:60px;border-radius:16px;background:linear-gradient(135deg,var(--hci-gold) 0%,#b8860b 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(200,165,90,.35);transition:all .3s;font-size:24px}
+.ai-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 12px 40px rgba(200,165,90,.45)}
+.ai-fab.hidden{transform:translateX(100px);opacity:0;pointer-events:none}
+.ai-fab .fab-pulse{position:absolute;inset:-4px;border-radius:20px;border:2px solid var(--hci-gold);opacity:0;animation:fabPulse 2.5s ease-out infinite}
+@keyframes fabPulse{0%{opacity:.6;transform:scale(1)}100%{opacity:0;transform:scale(1.3)}}
+.ai-panel{position:fixed;top:0;right:-440px;bottom:0;width:420px;z-index:1001;display:flex;flex-direction:column;background:var(--bg);border-left:1px solid var(--border);box-shadow:-8px 0 40px rgba(0,0,0,.5);transition:right .3s cubic-bezier(.4,0,.2,1)}
+.ai-panel.open{right:0}
+.ai-header{padding:18px 20px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(200,165,90,.08) 0%,rgba(13,15,20,.95) 100%);position:relative;overflow:hidden}
+.ai-header-inner{position:relative;z-index:1}
+.ai-header-top{display:flex;justify-content:space-between;align-items:center}
+.ai-header-left{display:flex;align-items:center;gap:10px}
+.ai-logo-icon{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--hci-gold) 0%,#b8860b 100%);display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;font-weight:600;color:var(--bg-deep);box-shadow:0 2px 8px rgba(200,165,90,.3)}
+.ai-header-title{font-size:15px;font-weight:600;color:var(--text-bright)}
+.ai-header-sub{font-size:11px;color:var(--text-dim)}
+.ai-header-actions{display:flex;align-items:center;gap:8px}
+.ai-lang-toggle{display:flex;gap:2px;background:rgba(0,0,0,.3);padding:3px;border-radius:6px;border:1px solid rgba(255,255,255,.06)}
+.ai-lang-btn{padding:4px 10px;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;background:transparent;color:var(--text-dim)}
+.ai-lang-btn.active{background:var(--hci-gold);color:var(--bg-deep)}
+.ai-lang-btn:hover:not(.active){color:var(--text)}
+.ai-close-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.ai-close-btn:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.ai-context{margin-top:10px;display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(200,165,90,.08);border:1px solid rgba(200,165,90,.15);border-radius:6px;font-size:11px;color:var(--hci-gold);font-family:'Geist Mono',monospace}
+.ai-context-dot{width:6px;height:6px;border-radius:50%;background:var(--hci-gold);animation:ctxBlink 2s ease-in-out infinite}
+@keyframes ctxBlink{0%,100%{opacity:1}50%{opacity:.4}}
+.ai-chat{flex:1;overflow-y:auto;padding:16px 20px;scroll-behavior:smooth}
+.ai-chat::-webkit-scrollbar{width:5px}
+.ai-chat::-webkit-scrollbar-thumb{background:rgba(200,165,90,.3);border-radius:3px}
+.ai-msg{margin-bottom:16px;animation:aiSlide .3s ease-out}
+@keyframes aiSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai-msg-head{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;color:var(--text-dim)}
+.ai-msg-avatar{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600}
+.ai-msg.user .ai-msg-avatar{background:linear-gradient(135deg,var(--warning) 0%,#FF6B35 100%);color:#fff}
+.ai-msg.assistant .ai-msg-avatar{background:linear-gradient(135deg,var(--hci-gold) 0%,#b8860b 100%);color:var(--bg-deep);font-family:'Geist Mono',monospace}
+.ai-msg-body{padding:12px 16px;border-radius:10px;font-size:13px;line-height:1.6;max-width:92%;font-family:'IBM Plex Sans',sans-serif}
+.ai-msg.user .ai-msg-body{background:rgba(200,165,90,.08);border:1px solid rgba(200,165,90,.15);margin-left:auto}
+.ai-msg.assistant .ai-msg-body{background:var(--bg-card);border:1px solid var(--border)}
+.ai-typing{display:none;align-items:center;gap:4px;padding:12px 16px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;width:fit-content;margin:0 20px 12px}
+.ai-typing.active{display:flex}
+.ai-typing-dot{width:5px;height:5px;background:var(--text-dim);border-radius:50%;animation:aiDot 1.4s ease-in-out infinite}
+.ai-typing-dot:nth-child(2){animation-delay:.2s}
+.ai-typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiDot{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-6px)}}
+.ai-input-area{padding:12px 16px 16px;border-top:1px solid var(--border);background:rgba(8,9,12,.8)}
+.ai-quick-actions{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.ai-quick-btn{background:var(--hci-gold-dim);border:1px solid var(--hci-gold-border);color:var(--hci-gold);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;white-space:nowrap}
+.ai-quick-btn:hover{background:rgba(200,165,90,.18);border-color:var(--hci-gold)}
+.ai-input-row{display:flex;gap:8px;align-items:flex-end}
+.ai-textarea{flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text-bright);font-size:13px;font-family:'IBM Plex Sans',sans-serif;resize:none;max-height:100px;transition:all .2s}
+.ai-textarea:focus{outline:none;border-color:var(--hci-gold-border);box-shadow:0 0 0 3px rgba(200,165,90,.08)}
+.ai-textarea::placeholder{color:var(--text-dim)}
+.ai-voice-btn{background:var(--hci-gold-dim);border:1px solid var(--hci-gold-border);color:var(--hci-gold);border-radius:10px;padding:10px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:center;font-size:13px;min-width:44px;justify-content:center}
+.ai-voice-btn:hover{background:rgba(200,165,90,.18)}
+.ai-voice-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-voice-btn.recording{background:rgba(248,113,113,.15);border-color:var(--error);color:var(--error);animation:recPulse 1.5s ease-in-out infinite}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(248,113,113,.4)}50%{box-shadow:0 0 0 6px rgba(248,113,113,0)}}
+.ai-send-btn{background:linear-gradient(135deg,var(--hci-gold) 0%,#b8860b 100%);border:none;border-radius:10px;padding:10px 18px;color:var(--bg-deep);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;box-shadow:0 2px 8px rgba(200,165,90,.25)}
+.ai-send-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(200,165,90,.35)}
+.ai-send-btn:disabled{opacity:.4;cursor:not-allowed}
+.ai-footer{padding:8px 16px;text-align:center;font-size:10px;color:var(--text-dim);border-top:1px solid var(--border);background:rgba(8,9,12,.6)}
+.ai-footer a{color:var(--hci-gold);text-decoration:none}
+
+@media(max-width:900px){.container{padding:20px}header{padding:16px 20px}.content-grid{grid-template-columns:1fr}.offer-cards{grid-template-columns:1fr}.metric-cards{grid-template-columns:repeat(2,1fr)}.steps-nav{flex-wrap:wrap}.step-tab{min-width:calc(50% - 4px)}.page-hero h1{font-size:30px}.score-row{grid-template-columns:1fr 60px 50px}.score-row .sr-help{display:none}.cmo-fmo-visual{grid-template-columns:1fr}.cmo-fmo-arrow{transform:rotate(90deg)}body.ai-open{margin-right:0}.ai-panel{width:100%;right:-100%}}
+</style>
+</head>
+<body>
+<div class="ambient"></div><div class="grain"></div>
+
+<header>
+  <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="lang-toggle"><button class="lang-btn active" id="mainLangNL" onclick="setPageLang('nl')">NL</button><button class="lang-btn" id="mainLangEN" onclick="setPageLang('en')">EN</button></div>
+    <div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="page-hero">
+    <a href="/" class="back-link">← Terug naar overzicht</a>
+    <div class="kicker">Fase 4 — Deal Close</div>
+    <h1>Sales <em>Executie</em></h1>
+    <p class="subtitle">Van qualified lead naar getekend contract. CMO→FMO methodologie, proposal templates, negotiation playbook, vendor co-sell activatie en gestructureerde deal close.</p>
+  </div>
+
+  <!-- JOURNEY RAIL — PMC+GTM+Outreach done, Sales current -->
+  <div class="journey-rail">
+    <a href="/pmc" class="journey-phase" style="cursor:pointer"><div class="jp-dot" style="border-color:var(--success);background:var(--success)"></div><div><div class="jp-text" style="color:var(--success)">PMC Creatie ✓</div><div class="jp-sub">Afgerond</div></div></a>
+    <div class="journey-connector"></div>
+    <a href="/gtm" class="journey-phase" style="cursor:pointer"><div class="jp-dot" style="border-color:var(--success);background:var(--success)"></div><div><div class="jp-text" style="color:var(--success)">GTM Voorbereiding ✓</div><div class="jp-sub">Afgerond</div></div></a>
+    <div class="journey-connector"></div>
+    <a href="/outreach" class="journey-phase" style="cursor:pointer"><div class="jp-dot" style="border-color:var(--success);background:var(--success)"></div><div><div class="jp-text" style="color:var(--success)">Outreach & Engagement ✓</div><div class="jp-sub">Afgerond</div></div></a>
+    <div class="journey-connector"></div>
+    <div class="journey-phase" style="background:var(--active-dim)"><div class="jp-dot" style="border-color:var(--hci-gold);background:var(--hci-gold)"></div><div><div class="jp-text" style="color:var(--hci-gold)">Sales Executie</div><div class="jp-sub">CMO→FMO</div></div></div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="progress-label" id="progressLabel">0 / 5 afgerond</div></div>
+
+  <div class="steps-nav">
+    <div class="step-tab active" onclick="goStep(0)"><div class="st-num">1</div><div class="st-label">CMO→FMO<br>Kwalificatie</div></div>
+    <div class="step-tab" onclick="goStep(1)"><div class="st-num">2</div><div class="st-label">Proposal<br>& Pricing</div></div>
+    <div class="step-tab" onclick="goStep(2)"><div class="st-num">3</div><div class="st-label">Negotiation<br>& Objections</div></div>
+    <div class="step-tab" onclick="goStep(3)"><div class="st-num">4</div><div class="st-label">Co-Sell<br>& Partners</div></div>
+    <div class="step-tab" onclick="goStep(4)"><div class="st-num">5</div><div class="st-label">Deal Close<br>& Handover</div></div>
+  </div>
+
+  <!-- ═══ STEP 1: CMO→FMO KWALIFICATIE ═══ -->
+  <div class="step-panel active" id="step0">
+    <div class="step-header-block"><div class="step-icon">🎯</div><div class="step-header-text"><h2>CMO→FMO Kwalificatie</h2><p class="step-desc">Account research, lead kwalificatie met BANT/MEDDPICC, en het CMO→FMO document als basis voor elk verkoopgesprek. Begrijp de klant voordat je pitcht.</p></div></div>
+    <div class="content-grid full"><div class="block"><div class="block-title"><span class="bt-dot"></span> CMO→FMO Framework</div>
+      <div class="cmo-fmo-visual">
+        <div class="cmo-box"><h4>CMO — Current Mode of Operations</h4>
+          <ul><li>Bestaand IT-landschap & infrastructuur</li><li>Huidige processen & governance</li><li>Pijnpunten & bottlenecks</li><li>Stakeholder dynamiek</li><li>Compliance status & gaps</li><li>Budget constraints & cycli</li></ul>
+        </div>
+        <div class="cmo-fmo-arrow">→</div>
+        <div class="fmo-box"><h4>FMO — Future Mode of Operations</h4>
+          <ul><li>Strategische doelen bereikt</li><li>Target architectuur gedefinieerd</li><li>Implementatie roadmap helder</li><li>Risk mitigatie ingeregeld</li><li>Meetbare outcomes afgesproken</li><li>Stakeholder alignment gesecured</li></ul>
+        </div>
+      </div>
+      <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> De waarde van het CMO→FMO document is niet het document zelf — het is het gestructureerde gesprek dat het mogelijk maakt. Dit positioneert je als thought partner, niet als vendor. Essentieel voor CIO's, CISO's en gereguleerde omgevingen.</div></div>
+    </div></div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Account Research Canvas</div>
+        <div class="canvas-field"><div class="canvas-label">Account Naam</div><div class="canvas-value placeholder">Naam organisatie, sector, omvang, locatie</div></div>
+        <div class="canvas-field"><div class="canvas-label">Strategische Pijn</div><div class="canvas-value placeholder">Wat is het business probleem? Welke urgentie? Welke trigger?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Decision Makers</div><div class="canvas-value placeholder">Wie beslist? (Champion, Economic Buyer, Technical Buyer, Coach)</div></div>
+        <div class="canvas-field"><div class="canvas-label">Budget & Timing</div><div class="canvas-value placeholder">Budget cycle? Beschikbaar budget? Procurement route? Fiscaal jaar?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Concurrentiepositie</div><div class="canvas-value placeholder">Welke alternatieven overwegen ze? Huidige leverancier? Status quo?</div></div>
+        <div class="canvas-field"><div class="canvas-label">CMO→FMO Document</div><div class="canvas-value placeholder">Upload of link naar het account-specifieke CMO→FMO document (4-6 pagina's + infographic)</div></div>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> BANT + MEDDPICC Kwalificatie</div>
+        <div class="score-row header"><div class="sr-label">Criterium</div><div class="sr-score">Score</div><div class="sr-weight">Weging</div><div class="sr-help">Toelichting</div></div>
+        <div class="score-row"><div class="sr-label">Budget geïdentificeerd</div><div class="sr-score">_ /5</div><div class="sr-weight">15%</div><div class="sr-help">Is er budget? Hoe groot?</div></div>
+        <div class="score-row"><div class="sr-label">Authority / Decision Maker</div><div class="sr-score">_ /5</div><div class="sr-weight">20%</div><div class="sr-help">Heb je de beslisser bereikt?</div></div>
+        <div class="score-row"><div class="sr-label">Need / Pijn gevalideerd</div><div class="sr-score">_ /5</div><div class="sr-weight">20%</div><div class="sr-help">Is de pijn erkend en urgent?</div></div>
+        <div class="score-row"><div class="sr-label">Timeline duidelijk</div><div class="sr-score">_ /5</div><div class="sr-weight">15%</div><div class="sr-help">Wanneer willen ze live?</div></div>
+        <div class="score-row"><div class="sr-label">Champion geactiveerd</div><div class="sr-score">_ /5</div><div class="sr-weight">15%</div><div class="sr-help">Interne advocaat aanwezig?</div></div>
+        <div class="score-row"><div class="sr-label">Paper Process bekend</div><div class="sr-score">_ /5</div><div class="sr-weight">15%</div><div class="sr-help">Procurement, legal, compliance route?</div></div>
+        <div class="score-row" style="border-color:var(--hci-gold-border)"><div class="sr-label" style="font-weight:600;color:var(--text-bright)">TOTAAL</div><div class="sr-score" style="color:var(--hci-gold);font-weight:600">_ /30</div><div class="sr-weight">100%</div><div class="sr-help">Gewogen kwalificatie score</div></div>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> Score <15: lead is nog niet sales-ready → terug naar nurturing. Score 15-22: actief werken aan gaps. Score >22: prioriteit deal, volledige executie.</div></div>
+      </div>
+    </div>
+    <div class="tools-row"><span class="tool-pill">CMO→FMO Template</span><span class="tool-pill">Account Research</span><span class="tool-pill">MEDDPICC Scorecard</span><span class="tool-pill">CRM Pipeline</span></div>
+    <div class="step-nav-buttons"><button class="nav-btn secondary" disabled>← Vorige</button><button class="nav-btn primary" onclick="goStep(1)">Volgende: Proposal & Pricing →</button></div>
+  </div>
+
+  <!-- ═══ STEP 2: PROPOSAL & PRICING ═══ -->
+  <div class="step-panel" id="step1">
+    <div class="step-header-block"><div class="step-icon">📋</div><div class="step-header-text"><h2>Proposal & Pricing</h2><p class="step-desc">Van kwalificatie naar concreet voorstel. Sprint A/B/C model, ROI business case, en gepersonaliseerde pricing gebaseerd op klantwaarde — niet op uren.</p></div></div>
+    <div class="content-grid full"><div class="block"><div class="block-title"><span class="bt-dot"></span> Sprint A/B/C Aanbod Structuur</div>
+      <div class="offer-cards">
+        <div class="offer-card"><div class="oc-badge">A</div><div class="oc-title">Assessment Sprint</div><div class="oc-dur">1-3 weken</div><div class="oc-desc">Voet in de deur. Laagdrempelig, hoge waarde. Diagnose die urgentie creëert voor Sprint B.</div><ul class="oc-dels"><li>Inventarisatie & gap analyse</li><li>CMO→FMO rapport</li><li>Roadmap & business case B+C</li><li>Stakeholder presentatie</li></ul></div>
+        <div class="offer-card"><div class="oc-badge">B</div><div class="oc-title">Build Sprint</div><div class="oc-dur">3-6 weken</div><div class="oc-desc">Kernomzet. Implementatie, deliverables, kennisoverdracht. Prijs op waarde, niet op uren.</div><ul class="oc-dels"><li>Technische implementatie</li><li>Configuratie & integratie</li><li>Kennisoverdracht team</li><li>Compliance verificatie</li></ul></div>
+        <div class="offer-card"><div class="oc-badge">C</div><div class="oc-title">Optimize Sprint</div><div class="oc-dur">Ongoing</div><div class="oc-desc">Recurring revenue. Managed service, adoptie, uitbreiding. Langetermijn partnerschap.</div><ul class="oc-dels"><li>Adoptie programma</li><li>Analytics & ROI tracking</li><li>Extra use cases</li><li>Managed service / SLA</li></ul></div>
+      </div>
+    </div></div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Proposal Canvas</div>
+        <div class="canvas-field"><div class="canvas-label">Sprint A — Scope & Investering</div><div class="canvas-value placeholder">Naam, duur, deliverables, investering. Bijv. "AI Readiness Assessment — 2 weken — €4.500"</div></div>
+        <div class="canvas-field"><div class="canvas-label">Sprint B — Scope & Investering</div><div class="canvas-value placeholder">Naam, duur, deliverables, investering. Bijv. "Secure Foundation Deploy — 6 weken — €25.000"</div></div>
+        <div class="canvas-field"><div class="canvas-label">Sprint C — Scope & Investering</div><div class="canvas-value placeholder">Naam, model, SLA. Bijv. "Managed Security Service — €2.500/maand — 12 maanden min."</div></div>
+        <div class="canvas-field"><div class="canvas-label">Commerciële Voorwaarden</div><div class="canvas-value placeholder">Betalingstermijnen, SLA, opzegtermijn, licentiemodel, garanties?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Vendor Funding Toepasbaar?</div><div class="canvas-value placeholder">Kan Sprint A gratis via vendor funding? Microsoft ECIF, Partner Development Funds?</div></div>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> ROI Business Case</div>
+        <ul class="action-list">
+          <li><strong>Huidige kosten (CMO):</strong> Wat kost het probleem nu? Directe kosten + verborgen kosten (tijd, risico, compliance boetes)</li>
+          <li><strong>Investering (Sprint A+B):</strong> Totale investering eerste jaar. Eenmalig + recurring. Inclusief interne resources klant</li>
+          <li><strong>Verwachte besparing (FMO):</strong> Concrete €-besparingen na implementatie. Break-even punt in maanden</li>
+          <li><strong>Strategische waarde:</strong> Niet-financiële voordelen: compliance, risicoreductie, schaalbaarheid, concurrentievoordeel</li>
+          <li><strong>Payback Period:</strong> Binnen hoeveel maanden verdient de klant de investering terug? Target: &lt;12 maanden</li>
+        </ul>
+        <div class="canvas-field"><div class="canvas-label">ROI Samenvatting</div><div class="canvas-value placeholder">Bijv. "Investering €29.500 | Jaarlijkse besparing €85.000 | Payback: 4.2 maanden | 3-jaars ROI: 764%"</div></div>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> Sprint A laag houden = voet in de deur. Sprint B = kernomzet, prijs op waarde. Sprint C = recurring. Vendor funding kan Sprint A gratis maken voor de klant — dat verwijdert de eerste drempel volledig.</div></div>
+      </div>
+    </div>
+    <div class="tools-row"><span class="tool-pill">Proposal Template</span><span class="tool-pill">ROI Calculator</span><span class="tool-pill">Pricing Model</span><span class="tool-pill">Vendor Funding Guide</span></div>
+    <div class="step-nav-buttons"><button class="nav-btn secondary" onclick="goStep(0)">← CMO→FMO</button><button class="nav-btn primary" onclick="goStep(2)">Volgende: Negotiation →</button></div>
+  </div>
+
+  <!-- ═══ STEP 3: NEGOTIATION & OBJECTION HANDLING ═══ -->
+  <div class="step-panel" id="step2">
+    <div class="step-header-block"><div class="step-icon">🛡️</div><div class="step-header-text"><h2>Negotiation & Objection Handling</h2><p class="step-desc">De top-10 bezwaren die je gaat horen, met gestructureerde response frameworks. Battle cards per concurrent, discovery vragen per stakeholder rol.</p></div></div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Top-10 Bezwaren Framework</div>
+        <ul class="action-list">
+          <li><strong>"Te duur"</strong> → Reframe naar TCO en ROI. Vergelijk met kosten van niets doen. Gebruik Sprint A als laagdrempelige start</li>
+          <li><strong>"We hebben al een leverancier"</strong> → Vraag naar tevredenheid, gaps, toekomstplannen. Positioneer als aanvulling, niet als vervanging</li>
+          <li><strong>"Geen budget dit jaar"</strong> → Vendor funding opties? Volgende budget cycle? Sprint A in huidige periode, B in nieuwe?</li>
+          <li><strong>"We doen het zelf"</strong> → Vraag naar tijdlijn en resources. Vergelijk time-to-value. Bied assessment aan als validatie</li>
+          <li><strong>"Moet naar procurement"</strong> → Prima, help actief. Lever alle benodigde documentatie. Vraag naar procurement criteria en tijdlijn</li>
+          <li><strong>"Niet nu, misschien later"</strong> → Begrepen. Wat verandert er? Compliance deadline? Budget cycle? Houd nurturing actief</li>
+          <li><strong>"Jullie zijn te klein/onbekend"</strong> → Referenties delen, 30+ jaar track record, vendor partnerships als validatie</li>
+          <li><strong>"GDPR / compliance bezwaren"</strong> → EU-first benadering tonen. Compliance documentatie, certifcering, data sovereignty</li>
+          <li><strong>"Interne weerstand"</strong> → Wie is tegen? Waarom? Help champion met interne pitch materialen en stakeholder mapping</li>
+          <li><strong>"Concurrent biedt meer features"</strong> → Features ≠ waarde. Focus op business outcomes, niet feature vergelijking. TCO analyse</li>
+        </ul>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Battle Card Canvas</div>
+        <div class="canvas-field"><div class="canvas-label">Concurrent 1</div><div class="canvas-value placeholder">Naam, sterke punten, zwakke punten, onze differentiatie, win strategy</div></div>
+        <div class="canvas-field"><div class="canvas-label">Concurrent 2</div><div class="canvas-value placeholder">Naam, sterke punten, zwakke punten, onze differentiatie, win strategy</div></div>
+        <div class="canvas-field"><div class="canvas-label">Concurrent 3</div><div class="canvas-value placeholder">Naam, sterke punten, zwakke punten, onze differentiatie, win strategy</div></div>
+        <div class="canvas-field"><div class="canvas-label">Status Quo (niets doen)</div><div class="canvas-value placeholder">Kosten van inaction? Risico's? Compliance exposure? Concurrentievoordeel verlies?</div></div>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> De grootste concurrent is bijna altijd "niets doen". Focus je battle card vooral op de kosten en risico's van de status quo. Dat is overtuigender dan feature-vergelijkingen.</div></div>
+      </div>
+    </div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Discovery Vragen per Stakeholder</div>
+        <div class="canvas-field"><div class="canvas-label">CIO / CTO (Technical Buyer)</div><div class="canvas-value placeholder">"Hoe ziet jullie huidige architectuur eruit? Waar zitten de grootste technische gaps? Wat is de target state voor over 2 jaar?"</div></div>
+        <div class="canvas-field"><div class="canvas-label">CFO / Finance (Economic Buyer)</div><div class="canvas-value placeholder">"Wat kost dit probleem jullie per jaar? Hoe past dit in de budget cycle? Welke ROI verwachten jullie?"</div></div>
+        <div class="canvas-field"><div class="canvas-label">CISO / Compliance (Influencer)</div><div class="canvas-value placeholder">"Welke compliance deadlines spelen? NIS2, DORA, AI Act? Wat is jullie huidige risico-exposure?"</div></div>
+        <div class="canvas-field"><div class="canvas-label">End User / Champion (Coach)</div><div class="canvas-value placeholder">"Wat frustreert je team het meest? Welke workarounds gebruiken jullie? Wie moet intern overtuigd worden?"</div></div>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Negotiation Playbook</div>
+        <ul class="action-list">
+          <li><strong>BATNA definiëren:</strong> Wat is je walk-away punt? Welke minimale deal accepteer je? Wat kost het om geen deal te sluiten?</li>
+          <li><strong>Concessie strategie:</strong> Geef nooit korting zonder tegenprestatie. Langere commitment? Grotere scope? Case study rechten?</li>
+          <li><strong>Pricing anchoring:</strong> Begin altijd met Sprint A+B+C totaal. Daarna pas opties aanbieden. Anchor hoog, onderhandel scope, niet prijs</li>
+          <li><strong>Procurement navigatie:</strong> Wie in procurement? Welke documenten nodig? Security questionnaire? Legal review? Start dit parallel aan sales gesprekken</li>
+          <li><strong>Timeline druk:</strong> Vendor funding deadlines, compliance deadlines, budget freeze dates — gebruik deze als natuurlijke urgentie drivers</li>
+        </ul>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> Enterprise deals worden niet gewonnen op prijs. Ze worden gewonnen op vertrouwen, bewezen methodologie, en de kwaliteit van je stakeholder management. Geduld en systeem-denken slaan altijd feature-vergelijkingen.</div></div>
+      </div>
+    </div>
+    <div class="tools-row"><span class="tool-pill">Battle Cards</span><span class="tool-pill">Objection Scripts</span><span class="tool-pill">Discovery Questions</span><span class="tool-pill">Negotiation Planner</span></div>
+    <div class="step-nav-buttons"><button class="nav-btn secondary" onclick="goStep(1)">← Proposal</button><button class="nav-btn primary" onclick="goStep(3)">Volgende: Co-Sell & Partners →</button></div>
+  </div>
+
+  <!-- ═══ STEP 4: VENDOR CO-SELL & PARTNER ACTIVATIE ═══ -->
+  <div class="step-panel" id="step3">
+    <div class="step-header-block"><div class="step-icon">🤝</div><div class="step-header-text"><h2>Vendor Co-Sell & Partner Activatie</h2><p class="step-desc">Activeer vendor partnerships, marketplace listings, co-sell programma's en channel partners om deals te versnellen en te vergroten.</p></div></div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Vendor Co-Sell Strategie</div>
+        <ul class="action-list">
+          <li><strong>Deal Registration:</strong> Registreer de deal bij je vendor partner (Microsoft Partner Center, AWS ACE, etc.). Dit beschermt je deal en activeert vendor support</li>
+          <li><strong>Co-Sell Motion:</strong> Vraag vendor AE om mee te pitchen. Vendor credibility + jouw implementatie expertise = sterkere propositie</li>
+          <li><strong>Vendor Funding:</strong> ECIF (Microsoft), AWS Credits, Partner Development Funds — kan Sprint A volledig dekken of significant reduceren</li>
+          <li><strong>Marketplace Listing:</strong> Transactie via Azure Marketplace / AWS Marketplace? Klant kan committed spend gebruiken = budget drempel weg</li>
+          <li><strong>Joint Business Plan:</strong> Stem je pipeline af met de vendor. Kwartaal target? Welke accounts samen? Welke events co-hosten?</li>
+        </ul>
+        <div class="canvas-field"><div class="canvas-label">Primaire Vendor Partner</div><div class="canvas-value placeholder">Microsoft / AWS / Google? Partner level? AE contactpersoon? Co-sell status?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Funding Aanvraag Status</div><div class="canvas-value placeholder">Welke funding aangevraagd? Status? Bedrag? Deadline? Goedkeuring nodig van?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Marketplace Status</div><div class="canvas-value placeholder">Listing actief? Private offer gemaakt? Transactie route gevalideerd?</div></div>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Channel Partner Activatie</div>
+        <div class="canvas-field"><div class="canvas-label">Partner 1 — Co-sell Account</div><div class="canvas-value placeholder">Partnernaam, gezamenlijk account, rol van partner (impl, resell, intro), revenue split, status</div></div>
+        <div class="canvas-field"><div class="canvas-label">Partner 2 — Co-sell Account</div><div class="canvas-value placeholder">Partnernaam, gezamenlijk account, rol van partner, revenue split, status</div></div>
+        <div class="canvas-field"><div class="canvas-label">Distributor Route</div><div class="canvas-value placeholder">Via distributor? Welke? (TD Synnex, Ingram, Arrow) Pricing? Margin structuur?</div></div>
+        <ul class="action-list" style="margin-top:14px">
+          <li><strong>Partner Enablement Check:</strong> Heeft de partner je Partner Acceleration Framework doorlopen? Zo niet → blocker voor effectieve co-sell</li>
+          <li><strong>Deal Support Materials:</strong> Battle card, demo script, pricing guide, ROI calculator — alles wat partner nodig heeft om autonoom te verkopen</li>
+          <li><strong>Joint Customer Meeting:</strong> Plan gezamenlijk klantgesprek. Verdeel rollen: jij = product expertise, partner = lokale relatie en implementatie</li>
+        </ul>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> Partner Acceleration Framework score <5? Dan is partner recruitment nog niet zinvol. Investeer eerst in het framework (€12.500). Partners zonder enablement materialen verbranden je leads.</div></div>
+      </div>
+    </div>
+    <div class="content-grid full"><div class="block"><div class="block-title"><span class="bt-dot"></span> HCI Netwerk Activatie voor deze Deal</div>
+      <div class="metric-cards">
+        <div class="metric-card"><div class="metric-value">300+</div><div class="metric-label">C-Level Contacten</div></div>
+        <div class="metric-card"><div class="metric-value">40-60%</div><div class="metric-label">Warm Intro Engagement</div></div>
+        <div class="metric-card"><div class="metric-value">30+</div><div class="metric-label">Jaar Netwerk</div></div>
+        <div class="metric-card"><div class="metric-value">€2.5K</div><div class="metric-label">Network Activation</div></div>
+      </div>
+    </div></div>
+    <div class="tools-row"><span class="tool-pill">Partner Portal</span><span class="tool-pill">Deal Registration</span><span class="tool-pill">Funding Aanvraag</span><span class="tool-pill">Marketplace Listing</span><span class="tool-pill">HCI Netwerk</span></div>
+    <div class="step-nav-buttons"><button class="nav-btn secondary" onclick="goStep(2)">← Negotiation</button><button class="nav-btn primary" onclick="goStep(4)">Volgende: Deal Close →</button></div>
+  </div>
+
+  <!-- ═══ STEP 5: DEAL CLOSE & HANDOVER ═══ -->
+  <div class="step-panel" id="step4">
+    <div class="step-header-block"><div class="step-icon">✅</div><div class="step-header-text"><h2>Deal Close & Handover</h2><p class="step-desc">Van mondeling akkoord naar getekend contract, gestructureerde onboarding, en de eerste referentie-klant die alles daarna versnelt.</p></div></div>
+    <div class="content-grid">
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Contract & Close Checklist</div>
+        <ul class="action-list">
+          <li><strong>Verbaal akkoord:</strong> Bevestiging van scope, prijs, timeline door economic buyer. Documenteer in CRM met datum en contactpersoon</li>
+          <li><strong>Legal Review:</strong> Contract naar legal klant. Verwachte doorlooptijd? Blokkerende clausules? NDA al getekend?</li>
+          <li><strong>Security Review:</strong> Security questionnaire ingevuld? Pen-test rapport beschikbaar? SOC2/ISO27001 certificering gedeeld?</li>
+          <li><strong>Procurement Process:</strong> PO nummer? Facturatie entiteit? Betalingstermijnen? VAT registratie correct?</li>
+          <li><strong>Contract Signing:</strong> DocuSign / wet signature? Wie tekent aan klant zijde? Alle bijlagen compleet?</li>
+          <li><strong>Internal Win Notification:</strong> Deal gewonnen → vendor notificeren, partner notificeren, CRM bijwerken, team briefen</li>
+        </ul>
+        <div class="canvas-field"><div class="canvas-label">Contract Status</div><div class="canvas-value placeholder">Draft / Legal Review / Redlines / Final / Signed? Verwachte signeer datum?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Open Blokkades</div><div class="canvas-value placeholder">Welke items blokkeren signing? Legal, procurement, budget, timing, personen?</div></div>
+      </div>
+      <div class="block"><div class="block-title"><span class="bt-dot"></span> Onboarding & Handover</div>
+        <div class="canvas-field"><div class="canvas-label">Kickoff Planning</div><div class="canvas-value placeholder">Kickoff datum, deelnemers, agenda, locatie (remote/onsite), deliverables na kickoff</div></div>
+        <div class="canvas-field"><div class="canvas-label">Sprint A Start Datum</div><div class="canvas-value placeholder">Wanneer start Sprint A? Welke resources nodig van klant? Pre-work vereisten?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Success Criteria</div><div class="canvas-value placeholder">Welke KPI's definiëren succes na Sprint A? Na Sprint B? Hoe meten we ROI?</div></div>
+        <div class="canvas-field"><div class="canvas-label">Escalatie Pad</div><div class="canvas-value placeholder">Wie is de escalatie contactpersoon bij klant? Bij ons? Review cadence (wekelijks/2-wekelijks)?</div></div>
+        <ul class="action-list" style="margin-top:14px">
+          <li><strong>Handover Document:</strong> Alle deal context, stakeholder mapping, afspraken, risico's → overdragen aan implementatie team</li>
+          <li><strong>CRM Update:</strong> Deal fase → Won. TCV vastleggen. Commissie berekening (10% TCV). Volgende actie: kickoff plannen</li>
+          <li><strong>Reference Planning:</strong> Na succesvolle Sprint A → case study gesprek plannen. Referentie = multiplicator voor volgende deals</li>
+        </ul>
+        <div class="tip-box"><div class="tip-icon">💡</div><div class="tip-text"><strong>HCI Tip:</strong> De eerste EU referentieklant ontgrendelt alles. Case studies, testimonials, proof points voor de volgende deals. Plan het reference gesprek al vóór kickoff — niet als afterthought.</div></div>
+      </div>
+    </div>
+    <div class="content-grid full"><div class="block"><div class="block-title"><span class="bt-dot"></span> Sales Executie — Completeness Checklist</div>
+      <ul class="action-list">
+        <li>CMO→FMO document opgeleverd per target account — huidige staat gedocumenteerd, toekomst gedefinieerd</li>
+        <li>Lead kwalificatie (BANT/MEDDPICC) gescoord — alle criteria beoordeeld, gaps geïdentificeerd en adresseerbaar</li>
+        <li>Proposal verstuurd — Sprint A/B/C scope, pricing, ROI business case, commerciële voorwaarden</li>
+        <li>Bezwaren afgehandeld — top bezwaren geadresseerd, battle cards gebruikt, discovery vragen gesteld</li>
+        <li>Vendor co-sell geactiveerd — deal geregistreerd, funding aangevraagd, co-sell motion gestart</li>
+        <li>Contract getekend — legal review afgerond, procurement compleet, PO ontvangen</li>
+        <li>Handover naar implementatie — kickoff gepland, success criteria gedefinieerd, referentie traject gestart</li>
+      </ul>
+    </div></div>
+    <div class="tools-row"><span class="tool-pill">Contract Template</span><span class="tool-pill">Onboarding Checklist</span><span class="tool-pill">CRM Pipeline</span><span class="tool-pill">KPI Dashboard</span><span class="tool-pill">Reference Template</span></div>
+    <div class="step-nav-buttons"><button class="nav-btn secondary" onclick="goStep(3)">← Co-Sell & Partners</button><button class="nav-btn primary" onclick="completeSales()" style="background:var(--success)">✓ Sales Executie Afronden — Deal Won!</button></div>
+  </div>
+
+</div>
+
+<!-- AI FAB -->
+<button class="ai-fab" id="aiFab" onclick="toggleAI()"><span>🤖</span><div class="fab-pulse"></div></button>
+
+<!-- AI PANEL -->
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-header"><div class="ai-header-inner">
+    <div class="ai-header-top">
+      <div class="ai-header-left"><div class="ai-logo-icon">AI</div><div><div class="ai-header-title">HCI AI Assistant</div><div class="ai-header-sub">Powered by Claude · Sales Module</div></div></div>
+      <div class="ai-header-actions">
+        <div class="ai-lang-toggle"><button class="ai-lang-btn active" id="aiLangNL" onclick="setAILang('nl')">NL</button><button class="ai-lang-btn" id="aiLangEN" onclick="setAILang('en')">EN</button></div>
+        <button class="ai-close-btn" onclick="toggleAI()">✕</button>
+      </div>
+    </div>
+    <div class="ai-context"><div class="ai-context-dot"></div><span id="aiCtxText">Stap 1 — CMO→FMO Kwalificatie</span></div>
+  </div></div>
+  <div class="ai-chat" id="aiChat">
+    <div class="ai-msg assistant"><div class="ai-msg-head"><div class="ai-msg-avatar">AI</div><span>HCI Assistant</span></div>
+      <div class="ai-msg-body"><p>Welkom bij Sales Executie! 🤝</p><p style="margin-top:8px">Tijd om deals te closen. Ik help je met:</p><p style="margin-top:8px">🎯 CMO→FMO Kwalificatie &nbsp; 📋 Proposals & Pricing<br>🛡️ Negotiation & Objections &nbsp; 🤝 Co-Sell Activatie<br>✅ Deal Close & Handover</p><p style="margin-top:8px">Stel je vraag of gebruik de snelknoppen.</p></div></div>
+  </div>
+  <div class="ai-typing" id="aiTyping"><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div></div>
+  <div class="ai-input-area">
+    <div class="ai-quick-actions" id="aiQA">
+      <button class="ai-quick-btn" onclick="aiQuick('help')">💡 Help bij deze stap</button>
+      <button class="ai-quick-btn" onclick="aiQuick('example')">📝 Geef voorbeeld</button>
+      <button class="ai-quick-btn" onclick="aiQuick('review')">✅ Review checklist</button>
+    </div>
+    <div class="ai-input-row">
+      <textarea class="ai-textarea" id="aiInput" placeholder="Stel je vraag over sales executie..." rows="1" onkeypress="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiSend()}"></textarea>
+      <button class="ai-voice-btn" id="aiVoiceBtn" onclick="aiToggleVoice()"><span id="aiVoiceIcon">🎤</span></button>
+      <button class="ai-send-btn" id="aiSendBtn" onclick="aiSend()">Verstuur</button>
+    </div>
+  </div>
+  <div class="ai-footer"><span id="aiFooter">Sales Module · <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> · Claude API</span></div>
+</div>
+
+<script>
+let currentStep=0;const totalSteps=5;const completedSteps=new Set();let pageLang='nl';
+const stepNames={nl:['CMO→FMO Kwalificatie','Proposal & Pricing','Negotiation & Objections','Co-Sell & Partners','Deal Close & Handover'],en:['CMO→FMO Qualification','Proposal & Pricing','Negotiation & Objections','Co-Sell & Partners','Deal Close & Handover']};
+
+/* ═══ FULL i18n DATA ═══ */
+const pageI18n={
+nl:{
+  kicker:'Fase 4 — Deal Close',title:'Sales <em>Executie</em>',
+  subtitle:'Van qualified lead naar getekend contract. CMO→FMO methodologie, proposal templates, negotiation playbook, vendor co-sell activatie en gestructureerde deal close.',
+  backLink:'← Terug naar overzicht',progress:' afgerond',progressDone:' afgerond — Sales Executie Compleet!',
+  journey:[['PMC Creatie ✓','Afgerond'],['GTM Voorbereiding ✓','Afgerond'],['Outreach & Engagement ✓','Afgerond'],['Sales Executie','CMO→FMO']],
+  tabs:[['CMO→FMO','Kwalificatie'],['Proposal','& Pricing'],['Negotiation','& Objections'],['Co-Sell','& Partners'],['Deal Close','& Handover']],
+  prev:'← Vorige',
+  s1:{
+    title:'CMO→FMO Kwalificatie',
+    desc:'Account research, lead kwalificatie met BANT/MEDDPICC, en het CMO→FMO document als basis voor elk verkoopgesprek. Begrijp de klant voordat je pitcht.',
+    bt:['CMO→FMO Framework','Account Research Canvas','BANT + MEDDPICC Kwalificatie'],
+    cmoTitle:'CMO — Current Mode of Operations',fmoTitle:'FMO — Future Mode of Operations',
+    cmoItems:['Bestaand IT-landschap & infrastructuur','Huidige processen & governance','Pijnpunten & bottlenecks','Stakeholder dynamiek','Compliance status & gaps','Budget constraints & cycli'],
+    fmoItems:['Strategische doelen bereikt','Target architectuur gedefinieerd','Implementatie roadmap helder','Risk mitigatie ingeregeld','Meetbare outcomes afgesproken','Stakeholder alignment gesecured'],
+    tip:'De waarde van het CMO→FMO document is niet het document zelf — het is het gestructureerde gesprek dat het mogelijk maakt. Dit positioneert je als thought partner, niet als vendor. Essentieel voor CIO\'s, CISO\'s en gereguleerde omgevingen.',
+    labels:['Account Naam','Strategische Pijn','Decision Makers','Budget & Timing','Concurrentiepositie','CMO→FMO Document'],
+    ph:['Naam organisatie, sector, omvang, locatie','Wat is het business probleem? Welke urgentie? Welke trigger?','Wie beslist? (Champion, Economic Buyer, Technical Buyer, Coach)','Budget cycle? Beschikbaar budget? Procurement route? Fiscaal jaar?','Welke alternatieven overwegen ze? Huidige leverancier? Status quo?','Upload of link naar het account-specifieke CMO→FMO document (4-6 pagina\'s + infographic)'],
+    scoreHeader:['Criterium','Score','Weging','Toelichting'],
+    criteria:['Budget geïdentificeerd','Authority / Decision Maker','Need / Pijn gevalideerd','Timeline duidelijk','Champion geactiveerd','Paper Process bekend','TOTAAL'],
+    scoreHelp:['Is er budget? Hoe groot?','Heb je de beslisser bereikt?','Is de pijn erkend en urgent?','Wanneer willen ze live?','Interne advocaat aanwezig?','Procurement, legal, compliance route?','Gewogen kwalificatie score'],
+    scoreTip:'Score <15: lead is nog niet sales-ready → terug naar nurturing. Score 15-22: actief werken aan gaps. Score >22: prioriteit deal, volledige executie.',
+    tools:['CMO→FMO Template','Account Research','MEDDPICC Scorecard','CRM Pipeline'],
+    navNext:'Volgende: Proposal & Pricing →'
+  },
+  s2:{
+    title:'Proposal & Pricing',
+    desc:'Van kwalificatie naar concreet voorstel. Sprint A/B/C model, ROI business case, en gepersonaliseerde pricing gebaseerd op klantwaarde — niet op uren.',
+    bt:['Sprint A/B/C Aanbod Structuur','Proposal Canvas','ROI Business Case'],
+    offerTitles:['Assessment Sprint','Build Sprint','Optimize Sprint'],
+    offerDurs:['1-3 weken','3-6 weken','Ongoing'],
+    offerDescs:['Voet in de deur. Laagdrempelig, hoge waarde. Diagnose die urgentie creëert voor Sprint B.','Kernomzet. Implementatie, deliverables, kennisoverdracht. Prijs op waarde, niet op uren.','Recurring revenue. Managed service, adoptie, uitbreiding. Langetermijn partnerschap.'],
+    offerDels:[['Inventarisatie & gap analyse','CMO→FMO rapport','Roadmap & business case B+C','Stakeholder presentatie'],['Technische implementatie','Configuratie & integratie','Kennisoverdracht team','Compliance verificatie'],['Adoptie programma','Analytics & ROI tracking','Extra use cases','Managed service / SLA']],
+    propLabels:['Sprint A — Scope & Investering','Sprint B — Scope & Investering','Sprint C — Scope & Investering','Commerciële Voorwaarden','Vendor Funding Toepasbaar?'],
+    propPh:['Naam, duur, deliverables, investering. Bijv. "AI Readiness Assessment — 2 weken — €4.500"','Naam, duur, deliverables, investering. Bijv. "Secure Foundation Deploy — 6 weken — €25.000"','Naam, model, SLA. Bijv. "Managed Security Service — €2.500/maand — 12 maanden min."','Betalingstermijnen, SLA, opzegtermijn, licentiemodel, garanties?','Kan Sprint A gratis via vendor funding? Microsoft ECIF, Partner Development Funds?'],
+    roiItems:['<strong>Huidige kosten (CMO):</strong> Wat kost het probleem nu? Directe kosten + verborgen kosten (tijd, risico, compliance boetes)','<strong>Investering (Sprint A+B):</strong> Totale investering eerste jaar. Eenmalig + recurring. Inclusief interne resources klant','<strong>Verwachte besparing (FMO):</strong> Concrete €-besparingen na implementatie. Break-even punt in maanden','<strong>Strategische waarde:</strong> Niet-financiële voordelen: compliance, risicoreductie, schaalbaarheid, concurrentievoordeel','<strong>Payback Period:</strong> Binnen hoeveel maanden verdient de klant de investering terug? Target: &lt;12 maanden'],
+    roiLabel:'ROI Samenvatting',roiPh:'Bijv. "Investering €29.500 | Jaarlijkse besparing €85.000 | Payback: 4.2 maanden | 3-jaars ROI: 764%"',
+    tip:'Sprint A laag houden = voet in de deur. Sprint B = kernomzet, prijs op waarde. Sprint C = recurring. Vendor funding kan Sprint A gratis maken voor de klant — dat verwijdert de eerste drempel volledig.',
+    tools:['Proposal Template','ROI Calculator','Pricing Model','Vendor Funding Guide'],
+    navPrev:'← CMO→FMO',navNext:'Volgende: Negotiation →'
+  },
+  s3:{
+    title:'Negotiation & Objection Handling',
+    desc:'De top-10 bezwaren die je gaat horen, met gestructureerde response frameworks. Battle cards per concurrent, discovery vragen per stakeholder rol.',
+    bt:['Top-10 Bezwaren Framework','Battle Card Canvas','Discovery Vragen per Stakeholder','Negotiation Playbook'],
+    objections:['<strong>"Te duur"</strong> → Reframe naar TCO en ROI. Vergelijk met kosten van niets doen. Gebruik Sprint A als laagdrempelige start','<strong>"We hebben al een leverancier"</strong> → Vraag naar tevredenheid, gaps, toekomstplannen. Positioneer als aanvulling, niet als vervanging','<strong>"Geen budget dit jaar"</strong> → Vendor funding opties? Volgende budget cycle? Sprint A in huidige periode, B in nieuwe?','<strong>"We doen het zelf"</strong> → Vraag naar tijdlijn en resources. Vergelijk time-to-value. Bied assessment aan als validatie','<strong>"Moet naar procurement"</strong> → Prima, help actief. Lever alle benodigde documentatie. Vraag naar procurement criteria en tijdlijn','<strong>"Niet nu, misschien later"</strong> → Begrepen. Wat verandert er? Compliance deadline? Budget cycle? Houd nurturing actief','<strong>"Jullie zijn te klein/onbekend"</strong> → Referenties delen, 30+ jaar track record, vendor partnerships als validatie','<strong>"GDPR / compliance bezwaren"</strong> → EU-first benadering tonen. Compliance documentatie, certificering, data sovereignty','<strong>"Interne weerstand"</strong> → Wie is tegen? Waarom? Help champion met interne pitch materialen en stakeholder mapping','<strong>"Concurrent biedt meer features"</strong> → Features ≠ waarde. Focus op business outcomes, niet feature vergelijking. TCO analyse'],
+    battleLabels:['Concurrent 1','Concurrent 2','Concurrent 3','Status Quo (niets doen)'],
+    battlePh:['Naam, sterke punten, zwakke punten, onze differentiatie, win strategy','Naam, sterke punten, zwakke punten, onze differentiatie, win strategy','Naam, sterke punten, zwakke punten, onze differentiatie, win strategy','Kosten van inaction? Risico\'s? Compliance exposure? Concurrentievoordeel verlies?'],
+    battleTip:'De grootste concurrent is bijna altijd "niets doen". Focus je battle card vooral op de kosten en risico\'s van de status quo. Dat is overtuigender dan feature-vergelijkingen.',
+    discLabels:['CIO / CTO (Technical Buyer)','CFO / Finance (Economic Buyer)','CISO / Compliance (Influencer)','End User / Champion (Coach)'],
+    discPh:['"Hoe ziet jullie huidige architectuur eruit? Waar zitten de grootste technische gaps? Wat is de target state voor over 2 jaar?"','"Wat kost dit probleem jullie per jaar? Hoe past dit in de budget cycle? Welke ROI verwachten jullie?"','"Welke compliance deadlines spelen? NIS2, DORA, AI Act? Wat is jullie huidige risico-exposure?"','"Wat frustreert je team het meest? Welke workarounds gebruiken jullie? Wie moet intern overtuigd worden?"'],
+    negItems:['<strong>BATNA definiëren:</strong> Wat is je walk-away punt? Welke minimale deal accepteer je? Wat kost het om geen deal te sluiten?','<strong>Concessie strategie:</strong> Geef nooit korting zonder tegenprestatie. Langere commitment? Grotere scope? Case study rechten?','<strong>Pricing anchoring:</strong> Begin altijd met Sprint A+B+C totaal. Daarna pas opties aanbieden. Anchor hoog, onderhandel scope, niet prijs','<strong>Procurement navigatie:</strong> Wie in procurement? Welke documenten nodig? Security questionnaire? Legal review? Start dit parallel aan sales gesprekken','<strong>Timeline druk:</strong> Vendor funding deadlines, compliance deadlines, budget freeze dates — gebruik deze als natuurlijke urgentie drivers'],
+    negTip:'Enterprise deals worden niet gewonnen op prijs. Ze worden gewonnen op vertrouwen, bewezen methodologie, en de kwaliteit van je stakeholder management. Geduld en systeem-denken slaan altijd feature-vergelijkingen.',
+    tools:['Battle Cards','Objection Scripts','Discovery Questions','Negotiation Planner'],
+    navPrev:'← Proposal',navNext:'Volgende: Co-Sell & Partners →'
+  },
+  s4:{
+    title:'Vendor Co-Sell & Partner Activatie',
+    desc:'Activeer vendor partnerships, marketplace listings, co-sell programma\'s en channel partners om deals te versnellen en te vergroten.',
+    bt:['Vendor Co-Sell Strategie','Channel Partner Activatie','HCI Netwerk Activatie voor deze Deal'],
+    coSellItems:['<strong>Deal Registration:</strong> Registreer de deal bij je vendor partner (Microsoft Partner Center, AWS ACE, etc.). Dit beschermt je deal en activeert vendor support','<strong>Co-Sell Motion:</strong> Vraag vendor AE om mee te pitchen. Vendor credibility + jouw implementatie expertise = sterkere propositie','<strong>Vendor Funding:</strong> ECIF (Microsoft), AWS Credits, Partner Development Funds — kan Sprint A volledig dekken of significant reduceren','<strong>Marketplace Listing:</strong> Transactie via Azure Marketplace / AWS Marketplace? Klant kan committed spend gebruiken = budget drempel weg','<strong>Joint Business Plan:</strong> Stem je pipeline af met de vendor. Kwartaal target? Welke accounts samen? Welke events co-hosten?'],
+    vendorLabels:['Primaire Vendor Partner','Funding Aanvraag Status','Marketplace Status'],
+    vendorPh:['Microsoft / AWS / Google? Partner level? AE contactpersoon? Co-sell status?','Welke funding aangevraagd? Status? Bedrag? Deadline? Goedkeuring nodig van?','Listing actief? Private offer gemaakt? Transactie route gevalideerd?'],
+    partnerLabels:['Partner 1 — Co-sell Account','Partner 2 — Co-sell Account','Distributor Route'],
+    partnerPh:['Partnernaam, gezamenlijk account, rol van partner (impl, resell, intro), revenue split, status','Partnernaam, gezamenlijk account, rol van partner, revenue split, status','Via distributor? Welke? (TD Synnex, Ingram, Arrow) Pricing? Margin structuur?'],
+    partnerItems:['<strong>Partner Enablement Check:</strong> Heeft de partner je Partner Acceleration Framework doorlopen? Zo niet → blocker voor effectieve co-sell','<strong>Deal Support Materials:</strong> Battle card, demo script, pricing guide, ROI calculator — alles wat partner nodig heeft om autonoom te verkopen','<strong>Joint Customer Meeting:</strong> Plan gezamenlijk klantgesprek. Verdeel rollen: jij = product expertise, partner = lokale relatie en implementatie'],
+    partnerTip:'Partner Acceleration Framework score <5? Dan is partner recruitment nog niet zinvol. Investeer eerst in het framework (€12.500). Partners zonder enablement materialen verbranden je leads.',
+    metrics:['C-Level Contacten','Warm Intro Engagement','Jaar Netwerk','Network Activation'],
+    tools:['Partner Portal','Deal Registration','Funding Aanvraag','Marketplace Listing','HCI Netwerk'],
+    navPrev:'← Negotiation',navNext:'Volgende: Deal Close →'
+  },
+  s5:{
+    title:'Deal Close & Handover',
+    desc:'Van mondeling akkoord naar getekend contract, gestructureerde onboarding, en de eerste referentie-klant die alles daarna versnelt.',
+    bt:['Contract & Close Checklist','Onboarding & Handover','Sales Executie — Completeness Checklist'],
+    closeItems:['<strong>Verbaal akkoord:</strong> Bevestiging van scope, prijs, timeline door economic buyer. Documenteer in CRM met datum en contactpersoon','<strong>Legal Review:</strong> Contract naar legal klant. Verwachte doorlooptijd? Blokkerende clausules? NDA al getekend?','<strong>Security Review:</strong> Security questionnaire ingevuld? Pen-test rapport beschikbaar? SOC2/ISO27001 certificering gedeeld?','<strong>Procurement Process:</strong> PO nummer? Facturatie entiteit? Betalingstermijnen? VAT registratie correct?','<strong>Contract Signing:</strong> DocuSign / wet signature? Wie tekent aan klant zijde? Alle bijlagen compleet?','<strong>Internal Win Notification:</strong> Deal gewonnen → vendor notificeren, partner notificeren, CRM bijwerken, team briefen'],
+    closeLabels:['Contract Status','Open Blokkades'],
+    closePh:['Draft / Legal Review / Redlines / Final / Signed? Verwachte signeer datum?','Welke items blokkeren signing? Legal, procurement, budget, timing, personen?'],
+    onbLabels:['Kickoff Planning','Sprint A Start Datum','Success Criteria','Escalatie Pad'],
+    onbPh:['Kickoff datum, deelnemers, agenda, locatie (remote/onsite), deliverables na kickoff','Wanneer start Sprint A? Welke resources nodig van klant? Pre-work vereisten?','Welke KPI\'s definiëren succes na Sprint A? Na Sprint B? Hoe meten we ROI?','Wie is de escalatie contactpersoon bij klant? Bij ons? Review cadence (wekelijks/2-wekelijks)?'],
+    onbItems:['<strong>Handover Document:</strong> Alle deal context, stakeholder mapping, afspraken, risico\'s → overdragen aan implementatie team','<strong>CRM Update:</strong> Deal fase → Won. TCV vastleggen. Commissie berekening (10% TCV). Volgende actie: kickoff plannen','<strong>Reference Planning:</strong> Na succesvolle Sprint A → case study gesprek plannen. Referentie = multiplicator voor volgende deals'],
+    tip:'De eerste EU referentieklant ontgrendelt alles. Case studies, testimonials, proof points voor de volgende deals. Plan het reference gesprek al vóór kickoff — niet als afterthought.',
+    checkItems:['CMO→FMO document opgeleverd per target account — huidige staat gedocumenteerd, toekomst gedefinieerd','Lead kwalificatie (BANT/MEDDPICC) gescoord — alle criteria beoordeeld, gaps geïdentificeerd en adresseerbaar','Proposal verstuurd — Sprint A/B/C scope, pricing, ROI business case, commerciële voorwaarden','Bezwaren afgehandeld — top bezwaren geadresseerd, battle cards gebruikt, discovery vragen gesteld','Vendor co-sell geactiveerd — deal geregistreerd, funding aangevraagd, co-sell motion gestart','Contract getekend — legal review afgerond, procurement compleet, PO ontvangen','Handover naar implementatie — kickoff gepland, success criteria gedefinieerd, referentie traject gestart'],
+    tools:['Contract Template','Onboarding Checklist','CRM Pipeline','KPI Dashboard','Reference Template'],
+    navPrev:'← Co-Sell & Partners',completeBtn:'✓ Sales Executie Afronden — Deal Won!'
+  }
+},
+en:{
+  kicker:'Phase 4 — Deal Close',title:'Sales <em>Execution</em>',
+  subtitle:'From qualified lead to signed contract. CMO→FMO methodology, proposal templates, negotiation playbook, vendor co-sell activation and structured deal close.',
+  backLink:'← Back to overview',progress:' completed',progressDone:' completed — Sales Execution Complete!',
+  journey:[['PMC Creation ✓','Completed'],['GTM Preparation ✓','Completed'],['Outreach & Engagement ✓','Completed'],['Sales Execution','CMO→FMO']],
+  tabs:[['CMO→FMO','Qualification'],['Proposal','& Pricing'],['Negotiation','& Objections'],['Co-Sell','& Partners'],['Deal Close','& Handover']],
+  prev:'← Previous',
+  s1:{
+    title:'CMO→FMO Qualification',
+    desc:'Account research, lead qualification using BANT/MEDDPICC, and the CMO→FMO document as the foundation for every sales conversation. Understand the customer before you pitch.',
+    bt:['CMO→FMO Framework','Account Research Canvas','BANT + MEDDPICC Qualification'],
+    cmoTitle:'CMO — Current Mode of Operations',fmoTitle:'FMO — Future Mode of Operations',
+    cmoItems:['Existing IT landscape & infrastructure','Current processes & governance','Pain points & bottlenecks','Stakeholder dynamics','Compliance status & gaps','Budget constraints & cycles'],
+    fmoItems:['Strategic objectives achieved','Target architecture defined','Implementation roadmap clear','Risk mitigation in place','Measurable outcomes agreed','Stakeholder alignment secured'],
+    tip:'The value of the CMO→FMO document is not the document itself — it\'s the structured conversation it enables. This positions you as a thought partner, not a vendor. Essential for CIOs, CISOs and regulated environments.',
+    labels:['Account Name','Strategic Pain','Decision Makers','Budget & Timing','Competitive Position','CMO→FMO Document'],
+    ph:['Organisation name, sector, size, location','What is the business problem? What urgency? What trigger?','Who decides? (Champion, Economic Buyer, Technical Buyer, Coach)','Budget cycle? Available budget? Procurement route? Fiscal year?','What alternatives are they considering? Current vendor? Status quo?','Upload or link to account-specific CMO→FMO document (4-6 pages + infographic)'],
+    scoreHeader:['Criterion','Score','Weight','Explanation'],
+    criteria:['Budget identified','Authority / Decision Maker','Need / Pain validated','Timeline clear','Champion activated','Paper Process known','TOTAL'],
+    scoreHelp:['Is there budget? How much?','Have you reached the decision maker?','Is the pain acknowledged and urgent?','When do they want to go live?','Internal advocate present?','Procurement, legal, compliance route?','Weighted qualification score'],
+    scoreTip:'Score <15: lead not sales-ready → back to nurturing. Score 15-22: actively work on gaps. Score >22: priority deal, full execution.',
+    tools:['CMO→FMO Template','Account Research','MEDDPICC Scorecard','CRM Pipeline'],
+    navNext:'Next: Proposal & Pricing →'
+  },
+  s2:{
+    title:'Proposal & Pricing',
+    desc:'From qualification to concrete proposal. Sprint A/B/C model, ROI business case, and personalised pricing based on customer value — not on hours.',
+    bt:['Sprint A/B/C Offer Structure','Proposal Canvas','ROI Business Case'],
+    offerTitles:['Assessment Sprint','Build Sprint','Optimize Sprint'],
+    offerDurs:['1-3 weeks','3-6 weeks','Ongoing'],
+    offerDescs:['Foot in the door. Low barrier, high value. Diagnosis that creates urgency for Sprint B.','Core revenue. Implementation, deliverables, knowledge transfer. Price on value, not hours.','Recurring revenue. Managed service, adoption, expansion. Long-term partnership.'],
+    offerDels:[['Inventory & gap analysis','CMO→FMO report','Roadmap & business case B+C','Stakeholder presentation'],['Technical implementation','Configuration & integration','Knowledge transfer team','Compliance verification'],['Adoption programme','Analytics & ROI tracking','Additional use cases','Managed service / SLA']],
+    propLabels:['Sprint A — Scope & Investment','Sprint B — Scope & Investment','Sprint C — Scope & Investment','Commercial Terms','Vendor Funding Applicable?'],
+    propPh:['Name, duration, deliverables, investment. E.g. "AI Readiness Assessment — 2 weeks — €4,500"','Name, duration, deliverables, investment. E.g. "Secure Foundation Deploy — 6 weeks — €25,000"','Name, model, SLA. E.g. "Managed Security Service — €2,500/month — 12 months min."','Payment terms, SLA, notice period, licensing model, warranties?','Can Sprint A be covered by vendor funding? Microsoft ECIF, Partner Development Funds?'],
+    roiItems:['<strong>Current costs (CMO):</strong> What does the problem cost now? Direct costs + hidden costs (time, risk, compliance fines)','<strong>Investment (Sprint A+B):</strong> Total first-year investment. One-time + recurring. Including client internal resources','<strong>Expected savings (FMO):</strong> Concrete €-savings post-implementation. Break-even point in months','<strong>Strategic value:</strong> Non-financial benefits: compliance, risk reduction, scalability, competitive advantage','<strong>Payback Period:</strong> How many months until the client earns back the investment? Target: &lt;12 months'],
+    roiLabel:'ROI Summary',roiPh:'E.g. "Investment €29,500 | Annual savings €85,000 | Payback: 4.2 months | 3-year ROI: 764%"',
+    tip:'Keep Sprint A low = foot in the door. Sprint B = core revenue, price on value. Sprint C = recurring. Vendor funding can make Sprint A free for the client — that removes the first barrier entirely.',
+    tools:['Proposal Template','ROI Calculator','Pricing Model','Vendor Funding Guide'],
+    navPrev:'← CMO→FMO',navNext:'Next: Negotiation →'
+  },
+  s3:{
+    title:'Negotiation & Objection Handling',
+    desc:'The top-10 objections you\'ll hear, with structured response frameworks. Battle cards per competitor, discovery questions per stakeholder role.',
+    bt:['Top-10 Objections Framework','Battle Card Canvas','Discovery Questions per Stakeholder','Negotiation Playbook'],
+    objections:['<strong>"Too expensive"</strong> → Reframe to TCO and ROI. Compare with cost of doing nothing. Use Sprint A as low-barrier entry','<strong>"We already have a vendor"</strong> → Ask about satisfaction, gaps, future plans. Position as complement, not replacement','<strong>"No budget this year"</strong> → Vendor funding options? Next budget cycle? Sprint A in current period, B in new?','<strong>"We\'ll do it ourselves"</strong> → Ask about timeline and resources. Compare time-to-value. Offer assessment as validation','<strong>"Needs to go to procurement"</strong> → Fine, actively help. Deliver all required documentation. Ask for procurement criteria and timeline','<strong>"Not now, maybe later"</strong> → Understood. What changes? Compliance deadline? Budget cycle? Keep nurturing active','<strong>"You\'re too small/unknown"</strong> → Share references, 30+ years track record, vendor partnerships as validation','<strong>"GDPR / compliance concerns"</strong> → Show EU-first approach. Compliance documentation, certification, data sovereignty','<strong>"Internal resistance"</strong> → Who is against? Why? Help champion with internal pitch materials and stakeholder mapping','<strong>"Competitor offers more features"</strong> → Features ≠ value. Focus on business outcomes, not feature comparison. TCO analysis'],
+    battleLabels:['Competitor 1','Competitor 2','Competitor 3','Status Quo (do nothing)'],
+    battlePh:['Name, strengths, weaknesses, our differentiation, win strategy','Name, strengths, weaknesses, our differentiation, win strategy','Name, strengths, weaknesses, our differentiation, win strategy','Cost of inaction? Risks? Compliance exposure? Competitive advantage loss?'],
+    battleTip:'The biggest competitor is almost always "do nothing". Focus your battle card mainly on the costs and risks of the status quo. That\'s more convincing than feature comparisons.',
+    discLabels:['CIO / CTO (Technical Buyer)','CFO / Finance (Economic Buyer)','CISO / Compliance (Influencer)','End User / Champion (Coach)'],
+    discPh:['"What does your current architecture look like? Where are the biggest technical gaps? What\'s the target state in 2 years?"','"What does this problem cost you per year? How does this fit the budget cycle? What ROI do you expect?"','"Which compliance deadlines are relevant? NIS2, DORA, AI Act? What\'s your current risk exposure?"','"What frustrates your team most? What workarounds do you use? Who needs to be convinced internally?"'],
+    negItems:['<strong>Define BATNA:</strong> What\'s your walk-away point? What minimum deal do you accept? What does not closing cost?','<strong>Concession strategy:</strong> Never give discounts without reciprocity. Longer commitment? Larger scope? Case study rights?','<strong>Pricing anchoring:</strong> Always start with Sprint A+B+C total. Only then offer options. Anchor high, negotiate scope, not price','<strong>Procurement navigation:</strong> Who in procurement? What documents needed? Security questionnaire? Legal review? Start this parallel to sales conversations','<strong>Timeline pressure:</strong> Vendor funding deadlines, compliance deadlines, budget freeze dates — use these as natural urgency drivers'],
+    negTip:'Enterprise deals aren\'t won on price. They\'re won on trust, proven methodology, and the quality of your stakeholder management. Patience and systems thinking always beat feature comparisons.',
+    tools:['Battle Cards','Objection Scripts','Discovery Questions','Negotiation Planner'],
+    navPrev:'← Proposal',navNext:'Next: Co-Sell & Partners →'
+  },
+  s4:{
+    title:'Vendor Co-Sell & Partner Activation',
+    desc:'Activate vendor partnerships, marketplace listings, co-sell programmes and channel partners to accelerate and scale deals.',
+    bt:['Vendor Co-Sell Strategy','Channel Partner Activation','HCI Network Activation for this Deal'],
+    coSellItems:['<strong>Deal Registration:</strong> Register the deal with your vendor partner (Microsoft Partner Center, AWS ACE, etc.). This protects your deal and activates vendor support','<strong>Co-Sell Motion:</strong> Ask vendor AE to co-pitch. Vendor credibility + your implementation expertise = stronger proposition','<strong>Vendor Funding:</strong> ECIF (Microsoft), AWS Credits, Partner Development Funds — can fully cover or significantly reduce Sprint A','<strong>Marketplace Listing:</strong> Transaction via Azure Marketplace / AWS Marketplace? Client can use committed spend = budget barrier removed','<strong>Joint Business Plan:</strong> Align your pipeline with the vendor. Quarterly target? Which accounts together? Which events to co-host?'],
+    vendorLabels:['Primary Vendor Partner','Funding Application Status','Marketplace Status'],
+    vendorPh:['Microsoft / AWS / Google? Partner level? AE contact? Co-sell status?','Which funding applied for? Status? Amount? Deadline? Approval needed from?','Listing active? Private offer created? Transaction route validated?'],
+    partnerLabels:['Partner 1 — Co-sell Account','Partner 2 — Co-sell Account','Distributor Route'],
+    partnerPh:['Partner name, joint account, partner role (impl, resell, intro), revenue split, status','Partner name, joint account, partner role, revenue split, status','Via distributor? Which? (TD Synnex, Ingram, Arrow) Pricing? Margin structure?'],
+    partnerItems:['<strong>Partner Enablement Check:</strong> Has the partner completed your Partner Acceleration Framework? If not → blocker for effective co-sell','<strong>Deal Support Materials:</strong> Battle card, demo script, pricing guide, ROI calculator — everything the partner needs to sell autonomously','<strong>Joint Customer Meeting:</strong> Plan joint customer meeting. Split roles: you = product expertise, partner = local relationship and implementation'],
+    partnerTip:'Partner Acceleration Framework score <5? Then partner recruitment is not yet worthwhile. First invest in the framework (€12,500). Partners without enablement materials burn your leads.',
+    metrics:['C-Level Contacts','Warm Intro Engagement','Years Network','Network Activation'],
+    tools:['Partner Portal','Deal Registration','Funding Application','Marketplace Listing','HCI Network'],
+    navPrev:'← Negotiation',navNext:'Next: Deal Close →'
+  },
+  s5:{
+    title:'Deal Close & Handover',
+    desc:'From verbal agreement to signed contract, structured onboarding, and the first reference customer that accelerates everything after.',
+    bt:['Contract & Close Checklist','Onboarding & Handover','Sales Execution — Completeness Checklist'],
+    closeItems:['<strong>Verbal agreement:</strong> Confirmation of scope, price, timeline by economic buyer. Document in CRM with date and contact','<strong>Legal Review:</strong> Contract to client legal. Expected turnaround? Blocking clauses? NDA already signed?','<strong>Security Review:</strong> Security questionnaire completed? Pen-test report available? SOC2/ISO27001 certification shared?','<strong>Procurement Process:</strong> PO number? Billing entity? Payment terms? VAT registration correct?','<strong>Contract Signing:</strong> DocuSign / wet signature? Who signs on client side? All attachments complete?','<strong>Internal Win Notification:</strong> Deal won → notify vendor, notify partner, update CRM, brief team'],
+    closeLabels:['Contract Status','Open Blockers'],
+    closePh:['Draft / Legal Review / Redlines / Final / Signed? Expected signing date?','Which items block signing? Legal, procurement, budget, timing, people?'],
+    onbLabels:['Kickoff Planning','Sprint A Start Date','Success Criteria','Escalation Path'],
+    onbPh:['Kickoff date, participants, agenda, location (remote/onsite), deliverables post-kickoff','When does Sprint A start? What resources needed from client? Pre-work requirements?','Which KPIs define success after Sprint A? After Sprint B? How do we measure ROI?','Who is escalation contact at client? At our side? Review cadence (weekly/bi-weekly)?'],
+    onbItems:['<strong>Handover Document:</strong> All deal context, stakeholder mapping, agreements, risks → transfer to implementation team','<strong>CRM Update:</strong> Deal stage → Won. Record TCV. Commission calculation (10% TCV). Next action: plan kickoff','<strong>Reference Planning:</strong> After successful Sprint A → plan case study conversation. Reference = multiplier for next deals'],
+    tip:'The first EU reference customer unlocks everything. Case studies, testimonials, proof points for the next deals. Plan the reference conversation before kickoff — not as an afterthought.',
+    checkItems:['CMO→FMO document delivered per target account — current state documented, future defined','Lead qualification (BANT/MEDDPICC) scored — all criteria assessed, gaps identified and addressable','Proposal sent — Sprint A/B/C scope, pricing, ROI business case, commercial terms','Objections handled — top objections addressed, battle cards used, discovery questions asked','Vendor co-sell activated — deal registered, funding applied, co-sell motion started','Contract signed — legal review complete, procurement done, PO received','Handover to implementation — kickoff planned, success criteria defined, reference track started'],
+    tools:['Contract Template','Onboarding Checklist','CRM Pipeline','KPI Dashboard','Reference Template'],
+    navPrev:'← Co-Sell & Partners',completeBtn:'✓ Complete Sales Execution — Deal Won!'
+  }
+}
+};
+
+function goStep(i){if(currentStep!==i)completedSteps.add(currentStep);currentStep=i;
+document.querySelectorAll('.step-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+document.querySelectorAll('.step-tab').forEach((t,j)=>{t.classList.remove('active','completed');if(j===i)t.classList.add('active');else if(completedSteps.has(j))t.classList.add('completed')});
+const pct=(completedSteps.size/totalSteps)*100;document.getElementById('progressFill').style.width=pct+'%';
+document.getElementById('progressLabel').textContent=completedSteps.size+' / '+totalSteps+' afgerond';
+document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'start'});updateCtx()}
+
+function completeSales(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
+document.getElementById('progressLabel').textContent='5 / 5 afgerond — Sales Executie Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
+document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
+alert('Sales Executie afgerond! ✓\n\n🎉 Gefeliciteerd! Alle 4 HCI modules doorlopen.\nVan PMC Creatie → GTM Voorbereiding → Outreach → Deal Close.\n\nNeem contact op voor het plannen van de volgende engagement cycle.')}
+
+/* ═══ AI ═══ */
+let aiLang='nl',aiHistory=[],aiOpen=false;
+const aiTxt={nl:{ph:'Stel je vraag over sales executie...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
+qm:{help:'Leg uit wat ik moet doen in deze sales executie stap en geef praktische tips.',example:'Geef een concreet voorbeeld voor deze stap, inclusief templates die ik kan aanpassen.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
+err:'⚠️ Kon geen verbinding maken. Probeer opnieuw.',u:'Jij',a:'HCI Assistant',sl:'nl-NL',vd:'Microfoon geweigerd.',vu:'Spraak niet ondersteund.'},
+en:{ph:'Ask about sales execution...',send:'Send',ctxPre:'Step',qa:[{l:'💡 Help with step',k:'help'},{l:'📝 Show example',k:'example'},{l:'✅ Review checklist',k:'review'}],
+qm:{help:'Explain what I need to do in this sales execution step with practical tips.',example:'Give a concrete example for this step, including templates I can customise.',review:'What are common mistakes in this step?'},
+err:'⚠️ Could not connect. Try again.',u:'You',a:'HCI Assistant',sl:'en-GB',vd:'Microphone denied.',vu:'Speech not supported.'}};
+
+const API_ENDPOINT='/api/chat';
+
+function getSysPrompt(){const s=currentStep+1,sn=stepNames[aiLang][currentStep],l=aiLang==='nl'?'Dutch':'English';
+return `You are the HCI AI Assistant in the Sales Execution Module (Phase 4) of HES Consultancy International.
+
+CONTEXT: User is on Step ${s}/5: "${sn}". Respond in ${l}. Phases 1 (PMC), 2 (GTM), and 3 (Outreach) are completed.
+
+SALES EXECUTION FRAMEWORK (5 steps):
+1) CMO→FMO Qualification — Account research, BANT+MEDDPICC lead scoring, CMO→FMO document creation (4-6 pages + infographic, €750/account min 3). CMO = Current Mode of Operations (existing IT, processes, pain points, stakeholder dynamics, compliance gaps, budget). FMO = Future Mode of Operations (strategic objectives, target architecture, roadmap, risk mitigation, measurable outcomes, stakeholder alignment). The value is the structured conversation it enables — positions as thought partner, not vendor.
+
+2) Proposal & Pricing — Sprint A/B/C offer model. Sprint A = Assessment (1-3 weeks, low barrier, creates urgency). Sprint B = Build (3-6 weeks, core revenue, price on value). Sprint C = Optimize (ongoing, managed service, recurring). ROI business case: current costs vs investment vs expected savings. Vendor funding can cover Sprint A entirely (Microsoft ECIF, AWS credits, Partner Development Funds).
+
+3) Negotiation & Objection Handling — Top 10 objections with response frameworks. Battle cards per competitor. Discovery questions per stakeholder role (CIO, CFO, CISO, End User). Negotiation playbook: BATNA, concession strategy, pricing anchoring, procurement navigation, timeline pressure.
+
+4) Vendor Co-Sell & Partner Activation — Deal registration, co-sell motions with vendor AEs, vendor funding (ECIF, credits), marketplace transactions (Azure/AWS), joint business plans. Channel partner activation: Partner Acceleration Framework (€12,500 if enablement score <5), co-sell accounts, distributor routes.
+
+5) Deal Close & Handover — Contract checklist (verbal agreement, legal, security, procurement, signing). Onboarding handover (kickoff, Sprint A start, success criteria, escalation). Reference planning from day 1. 10% TCV commission model.
+
+HCI METHODOLOGY: Assessment-driven engagement. CMO→FMO methodology shows patience, systems thinking, respect for organizational complexity. Enterprise-grade pacing. 30+ years EU market experience. 300+ C-level network. Revynu benchmark (62% response) as conversation opener. Multi-channel orchestration. Quality over quantity.
+
+HCI SERVICES PRICING: Onboarding €2,000-€9,250 (score-based). Execution tiers: Exploration €5,000/mo, Market Entry €6,750/mo, Full Commitment €14,500/mo. All + 10% TCV. CMO→FMO docs €750/account (min 3). Partner Assessment €1,500. Partner Acceleration Framework €12,500. Network Activation €2,500.
+
+RULES: Be practical. Give concrete examples and templates when asked. Reference specific pricing, methodologies, and metrics. Help with objection responses, proposal language, and negotiation tactics.`}
+
+function toggleAI(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.toggle('open',aiOpen);document.getElementById('aiFab').classList.toggle('hidden',aiOpen);document.body.classList.toggle('ai-open',aiOpen);if(aiOpen){updateCtx();setTimeout(()=>document.getElementById('aiInput').focus(),300)}}
+function updateCtx(){document.getElementById('aiCtxText').textContent=`${aiTxt[aiLang].ctxPre} ${currentStep+1} — ${stepNames[aiLang][currentStep]}`}
+function setAILang(l){aiLang=l;const t=aiTxt[l];document.getElementById('aiLangNL').classList.toggle('active',l==='nl');document.getElementById('aiLangEN').classList.toggle('active',l==='en');
+document.getElementById('aiInput').placeholder=t.ph;document.getElementById('aiSendBtn').textContent=t.send;
+document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');updateCtx();if(aiRec)aiRec.lang=t.sl}
+function setPageLang(l){pageLang=l;document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l);applyPageLang()}
+
+function applyPageLang(){
+  var t=pageI18n[pageLang];
+  // Hero
+  document.querySelector('.page-hero .kicker').textContent=t.kicker;
+  document.querySelector('.page-hero h1').innerHTML=t.title;
+  document.querySelector('.page-hero .subtitle').textContent=t.subtitle;
+  document.querySelector('.page-hero .back-link').textContent=t.backLink;
+  // Progress
+  var done=completedSteps.size;
+  document.getElementById('progressLabel').textContent=done===5?('5 / 5'+t.progressDone):(done+' / '+totalSteps+t.progress);
+  // Tabs
+  document.querySelectorAll('.step-tab .st-label').forEach(function(el,i){if(t.tabs[i])el.innerHTML=t.tabs[i][0]+'<br>'+t.tabs[i][1]});
+  // Journey
+  document.querySelectorAll('.journey-phase').forEach(function(el,i){var jp=el.querySelectorAll('.jp-text,.jp-sub');if(t.journey[i]){jp[0].textContent=t.journey[i][0];jp[1].textContent=t.journey[i][1]}});
+  // Steps
+  applySalesStep(0,t.s1,t);applySalesStep(1,t.s2,t);applySalesStep(2,t.s3,t);applySalesStep(3,t.s4,t);applySalesStep(4,t.s5,t);
+}
+
+function applySalesStep(idx,s,t){
+  var panel=document.getElementById('step'+idx);if(!panel||!s)return;
+  // Header
+  panel.querySelector('.step-header-text h2').textContent=s.title;
+  panel.querySelector('.step-header-text .step-desc').textContent=s.desc;
+  // Block titles
+  var allBT=panel.querySelectorAll('.block-title');
+  if(s.bt)s.bt.forEach(function(txt,i){if(allBT[i])allBT[i].innerHTML='<span class="bt-dot"></span> '+txt});
+  // Tools
+  if(s.tools){var tr=panel.querySelector('.tools-row');if(tr)tr.innerHTML=s.tools.map(function(x){return '<span class="tool-pill">'+x+'</span>'}).join('')}
+  // Nav buttons
+  var btns=panel.querySelectorAll('.nav-btn');
+  if(idx===0){if(btns[0])btns[0].textContent=t.prev;if(btns[1])btns[1].textContent=s.navNext}
+  else if(idx===4){if(btns[0])btns[0].textContent=s.navPrev;if(btns[1])btns[1].textContent=s.completeBtn}
+  else{if(btns[0])btns[0].textContent=s.navPrev;if(btns[1])btns[1].textContent=s.navNext}
+
+  // Step-specific content
+  if(idx===0)applyStep1(panel,s);
+  if(idx===1)applyStep2(panel,s);
+  if(idx===2)applyStep3(panel,s);
+  if(idx===3)applyStep4(panel,s);
+  if(idx===4)applyStep5(panel,s);
+}
+
+function applyStep1(p,s){
+  // CMO/FMO boxes
+  var cmo=p.querySelector('.cmo-box');var fmo=p.querySelector('.fmo-box');
+  if(cmo){cmo.querySelector('h4').textContent=s.cmoTitle;cmo.querySelectorAll('li').forEach(function(li,i){if(s.cmoItems[i])li.textContent=s.cmoItems[i]})}
+  if(fmo){fmo.querySelector('h4').textContent=s.fmoTitle;fmo.querySelectorAll('li').forEach(function(li,i){if(s.fmoItems[i])li.textContent=s.fmoItems[i]})}
+  // Tip (first tip box)
+  var tips=p.querySelectorAll('.tip-box .tip-text');
+  if(tips[0])tips[0].innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+  // Canvas fields (second block)
+  var blocks=p.querySelectorAll('.block');
+  if(blocks[1]){blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph[i])vl.textContent=s.ph[i]})}
+  // Score rows (third block)
+  if(blocks[2]){
+    var hdr=blocks[2].querySelector('.score-row.header');
+    if(hdr){var cells=hdr.querySelectorAll('div');s.scoreHeader.forEach(function(txt,i){if(cells[i])cells[i].textContent=txt})}
+    var rows=blocks[2].querySelectorAll('.score-row:not(.header)');
+    rows.forEach(function(r,i){var lb=r.querySelector('.sr-label');var h=r.querySelector('.sr-help');if(lb&&s.criteria[i])lb.textContent=s.criteria[i];if(h&&s.scoreHelp[i])h.textContent=s.scoreHelp[i]});
+    if(tips[1])tips[1].innerHTML='<strong>HCI Tip:</strong> '+s.scoreTip;
+  }
+}
+
+function applyStep2(p,s){
+  // Offer cards
+  var cards=p.querySelectorAll('.offer-card');
+  cards.forEach(function(c,i){
+    var t=c.querySelector('.oc-title');var d=c.querySelector('.oc-dur');var desc=c.querySelector('.oc-desc');
+    if(t&&s.offerTitles[i])t.textContent=s.offerTitles[i];
+    if(d&&s.offerDurs[i])d.textContent=s.offerDurs[i];
+    if(desc&&s.offerDescs[i])desc.textContent=s.offerDescs[i];
+    var dels=c.querySelectorAll('.oc-dels li');
+    if(s.offerDels[i])dels.forEach(function(li,j){if(s.offerDels[i][j])li.innerHTML='<span class="oc-arrow"></span>'+s.offerDels[i][j]});
+  });
+  // Proposal canvas (second block)
+  var blocks=p.querySelectorAll('.block');
+  if(blocks[1]){blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.propLabels[i])lb.textContent=s.propLabels[i];if(vl&&s.propPh[i])vl.textContent=s.propPh[i]})}
+  // ROI items (third block)
+  if(blocks[2]){
+    blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.roiItems[i])li.innerHTML=s.roiItems[i]});
+    var cf=blocks[2].querySelectorAll('.canvas-field');
+    if(cf[0]){var lb=cf[0].querySelector('.canvas-label');var vl=cf[0].querySelector('.canvas-value');if(lb)lb.textContent=s.roiLabel;if(vl)vl.textContent=s.roiPh}
+    var tip=blocks[2].querySelector('.tip-box .tip-text');if(tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+  }
+}
+
+function applyStep3(p,s){
+  var blocks=p.querySelectorAll('.block');
+  // Objections (block 0)
+  if(blocks[0]){blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.objections[i])li.innerHTML=s.objections[i]})}
+  // Battle cards (block 1)
+  if(blocks[1]){
+    blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.battleLabels[i])lb.textContent=s.battleLabels[i];if(vl&&s.battlePh[i])vl.textContent=s.battlePh[i]});
+    var tip=blocks[1].querySelector('.tip-box .tip-text');if(tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.battleTip;
+  }
+  // Discovery (block 2)
+  if(blocks[2]){blocks[2].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.discLabels[i])lb.textContent=s.discLabels[i];if(vl&&s.discPh[i])vl.textContent=s.discPh[i]})}
+  // Negotiation (block 3)
+  if(blocks[3]){
+    blocks[3].querySelectorAll('.action-list li').forEach(function(li,i){if(s.negItems[i])li.innerHTML=s.negItems[i]});
+    var tip=blocks[3].querySelector('.tip-box .tip-text');if(tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.negTip;
+  }
+}
+
+function applyStep4(p,s){
+  var blocks=p.querySelectorAll('.block');
+  // Co-sell items (block 0)
+  if(blocks[0]){
+    blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.coSellItems[i])li.innerHTML=s.coSellItems[i]});
+    blocks[0].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.vendorLabels[i])lb.textContent=s.vendorLabels[i];if(vl&&s.vendorPh[i])vl.textContent=s.vendorPh[i]});
+  }
+  // Partner (block 1)
+  if(blocks[1]){
+    var cf=blocks[1].querySelectorAll('.canvas-field');
+    cf.forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.partnerLabels[i])lb.textContent=s.partnerLabels[i];if(vl&&s.partnerPh[i])vl.textContent=s.partnerPh[i]});
+    blocks[1].querySelectorAll('.action-list li').forEach(function(li,i){if(s.partnerItems[i])li.innerHTML=s.partnerItems[i]});
+    var tip=blocks[1].querySelector('.tip-box .tip-text');if(tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.partnerTip;
+  }
+  // Metrics (block 2)
+  if(blocks[2]){blocks[2].querySelectorAll('.metric-label').forEach(function(ml,i){if(s.metrics[i])ml.textContent=s.metrics[i]})}
+}
+
+function applyStep5(p,s){
+  var blocks=p.querySelectorAll('.block');
+  // Close checklist (block 0)
+  if(blocks[0]){
+    blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.closeItems[i])li.innerHTML=s.closeItems[i]});
+    blocks[0].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.closeLabels[i])lb.textContent=s.closeLabels[i];if(vl&&s.closePh[i])vl.textContent=s.closePh[i]});
+  }
+  // Onboarding (block 1)
+  if(blocks[1]){
+    blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.onbLabels[i])lb.textContent=s.onbLabels[i];if(vl&&s.onbPh[i])vl.textContent=s.onbPh[i]});
+    blocks[1].querySelectorAll('.action-list li').forEach(function(li,i){if(s.onbItems[i])li.innerHTML=s.onbItems[i]});
+    var tip=blocks[1].querySelector('.tip-box .tip-text');if(tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+  }
+  // Completeness checklist (block 2)
+  if(blocks[2]){blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checkItems[i])li.textContent=s.checkItems[i]})}
+}
+
+let aiRec=null,aiRecording=false;
+if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;
+aiRec.onstart=()=>{aiRecording=true;document.getElementById('aiVoiceBtn').classList.add('recording');document.getElementById('aiVoiceIcon').textContent='🔴'};
+aiRec.onresult=e=>{document.getElementById('aiInput').value=e.results[0][0].transcript;setTimeout(()=>aiSend(),400)};
+aiRec.onerror=e=>{aiResetV();if(e.error==='not-allowed')alert(aiTxt[aiLang].vd)};aiRec.onend=aiResetV}
+function aiToggleVoice(){if(!aiRec){alert(aiTxt[aiLang].vu);return}aiRecording?aiRec.stop():aiRec.start()}
+function aiResetV(){aiRecording=false;document.getElementById('aiVoiceBtn').classList.remove('recording');document.getElementById('aiVoiceIcon').textContent='🎤'}
+function aiQuick(k){document.getElementById('aiInput').value=aiTxt[aiLang].qm[k];aiSend()}
+function aiAddMsg(c,type){const el=document.getElementById('aiChat'),t=aiTxt[aiLang],d=document.createElement('div');d.className=`ai-msg ${type}`;
+d.innerHTML=`<div class="ai-msg-head"><div class="ai-msg-avatar">${type==='user'?'U':'AI'}</div><span>${type==='user'?t.u:t.a}</span></div><div class="ai-msg-body">${c}</div>`;
+el.appendChild(d);el.scrollTop=el.scrollHeight}
+
+async function aiSend(){const inp=document.getElementById('aiInput'),msg=inp.value.trim();if(!msg)return;
+aiAddMsg(msg,'user');inp.value='';inp.style.height='auto';aiHistory.push({role:'user',content:msg});
+const typ=document.getElementById('aiTyping');typ.classList.add('active');document.getElementById('aiSendBtn').disabled=true;document.getElementById('aiVoiceBtn').disabled=true;
+try{const res=await fetch(API_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({system:getSysPrompt(),messages:aiHistory.slice(-10),language:aiLang})});
+const data=await res.json();if(!res.ok||data.error)throw new Error(data.error||'API error');
+aiHistory.push({role:'assistant',content:data.reply});typ.classList.remove('active');aiAddMsg(fmtReply(data.reply),'assistant')}
+catch(e){console.error('AI:',e);typ.classList.remove('active');aiAddMsg(aiTxt[aiLang].err,'assistant')}
+finally{document.getElementById('aiSendBtn').disabled=false;document.getElementById('aiVoiceBtn').disabled=false}}
+
+function fmtReply(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>')}
+document.getElementById('aiInput').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'});
+</script>
+</body>
+</html>
