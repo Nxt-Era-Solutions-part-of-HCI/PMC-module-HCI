@@ -553,6 +553,101 @@ function applyGtmLang(l){
   });
 }
 
+/* ═══ DEEP CONTENT i18n PATCH ═══ */
+var gtmDeep={
+nl:{
+  s1:{bt:['De 5-Slide Structuur','Per Slide Invullen','Deck Design Principes'],
+    labels:['Slide 1 — Headline','Slide 2 — Waardepropositie','Slide 3 — Proof Point','Slide 4 — Sprint A Aanbod','Slide 5 — CTA'],
+    ph:['De pijn in één zin. Bijv. "73% van ziekenhuizen verliest 2+ uur per arts per dag aan admin"','Kopieer je PMC waardepropositie formule hier','Case study, benchmark resultaat, of referentie klant','Naam, duur, deliverables, investering van Sprint A','Welke actie? Meeting boeken, assessment starten, demo?'],
+    checks:['<strong>Maximaal 5 slides</strong> — als je meer nodig hebt, is je verhaal niet scherp genoeg','<strong>Eén boodschap per slide</strong> — geen bullet point overload','<strong>Prospect-centric</strong> — het gaat over hun probleem, niet over jouw bedrijf','<strong>Intern deelbaar</strong> — je champion moet dit deck zonder jou kunnen presenteren','<strong>Data-driven</strong> — elk claim onderbouwd met een cijfer of bron'],
+    tip:'Maak twee varianten: een "leave-behind" versie (zelfstandig leesbaar) en een "presentatie" versie (visueel, minimaal tekst). De leave-behind is wat je champion intern doorstuurt.'},
+  s2:{bt:['Pipeline Stadia Definiëren','CRM Configuratie'],
+    labels:['Stadium 1 — Lead (0-10%)','Stadium 2 — Qualified (10-25%)','Stadium 3 — Discovery (25-50%)','Stadium 4 — Proposal (50-75%)','Stadium 5 — Negotiation (75-90%)','Stadium 6 — Won / Lost'],
+    ph:['Eerste contact gelegd. Bron geïdentificeerd (Revynu, LinkedIn, event, referral).','ICP match bevestigd. Pain gevalideerd. Budget indicatie verkregen.','Intake gesprek afgerond. Decision makers in kaart. Sprint A gepresenteerd.','Offerte uitgebracht. Commerciële voorwaarden besproken. Tijdlijn afgestemd.','Juridisch/procurement. Contractonderhandeling. Interne goedkeuring klant.','Deal gesloten of verloren. Win/loss analyse documenteren.'],
+    items:['<strong>CRM Platform:</strong> HubSpot Starter (€20/mo) of Dynamics 365 (bestaand bij klant)','<strong>Custom velden:</strong> ICP Score, Segment, Bron, Revynu Status, Sprint Type','<strong>Lead scoring:</strong> Firmographic (sector, omvang) + Behavioral (email opens, clicks, benchmark deelname)','<strong>Rapportage:</strong> Wekelijkse pipeline review, maandelijkse conversion funnel, kwartaal forecast','<strong>Integratie:</strong> Email tracking, LinkedIn (via HeyReach), calendar booking'],
+    tip:'Begin simpel. 6 stadia, 5 custom velden, 1 wekelijks rapport. Complexiteit toevoegen als de pipeline groeit. De HCI database (6.339 contacten) kan als startpunt dienen na cleanup.'},
+  s3:{bt:['Multi-Channel Campagne Componenten','Email Sequence Opbouw','LinkedIn Cadence'],
+    elabels:['Email 1 — Pain Trigger (Dag 1)','Email 2 — Benchmark Invite (Dag 4)','Email 3 — Social Proof (Dag 8)','Email 4 — CTA (Dag 12)'],
+    eph:['Subject line: pijn-gebaseerd. Body: herkenbare situatie + vraag. Geen pitch.','Revynu benchmark uitnodiging als waardevolle content. Geen directe verkoop.','Case study of referentie die relevant is voor het segment. Korte, krachtige resultaten.','Directe uitnodiging voor gesprek. Laagdrempelig: "15 minuten, geen verplichtingen".'],
+    llabels:['Stap 1 — Profile View + Connect','Stap 2 — Welcome + Value (Dag 2)','Stap 3 — Benchmark Invite (Dag 5)','Stap 4 — Meeting Ask (Dag 10)'],
+    lph:['Bekijk profiel. Stuur connectie verzoek met persoonlijke noot (max 300 tekens).','Bedank voor connectie. Deel relevante content of inzicht. Geen pitch.','Nodig uit voor Revynu benchmark. Positioneer als "gratis inzicht" niet als verkooptool.','Directe vraag voor gesprek. Refereer aan benchmark of eerder gedeelde content.'],
+    tip:'De Revynu benchmark convergeert alle kanalen. Email EN LinkedIn verwijzen naar dezelfde benchmark. Dit creëert multi-touch zonder repetitief te zijn.'},
+  s4:{bt:['Data Cleanup Stappenplan','Database Kwaliteitsmetrieken'],
+    items:['<strong>Stap 1 — Deduplicatie:</strong> Verwijder dubbele contacten (naam + organisatie combinatie). Check op verouderde bedrijfsnamen','<strong>Stap 2 — ICP Herscoring:</strong> Pas ICP scores aan op basis van PMC doelmarkt. A-Enterprise, B-Mid-Market, C-Standaard','<strong>Stap 3 — Email Enrichment:</strong> Vul ontbrekende emails aan via Apollo, Hunter.io, of Clearbit. Target: >80% dekking','<strong>Stap 4 — LinkedIn Matching:</strong> Koppel contacten aan LinkedIn profielen. Essentieel voor multi-channel outreach','<strong>Stap 5 — Segmentatie:</strong> Label contacten per industrie, functie, en beslissingsbevoegdheid','<strong>Stap 6 — Import naar CRM:</strong> Schone data importeren in HubSpot/Dynamics met alle custom velden'],
+    labels:['Totaal Contacten','Email Dekking (%)','LinkedIn Match (%)','ICP A-Contacten','Engagement Baseline'],
+    tip:'Begin met je Top-50 accounts (ICP A). Handmatig enrichen en valideren. De rest automatiseren via tooling. Kwaliteit > kwantiteit bij de eerste campagneronde.'},
+  s5:{bt:['Enablement Documenten','Per Document Invullen','GTM Readiness Checklist'],
+    items:['<strong>Battle Card (1-pager):</strong> Markt, pijn, oplossing, differentiators, pricing, vs concurrenten. Altijd bij de hand','<strong>Objection Handling Guide:</strong> Top-10 bezwaren + response scripts. "Te duur", "niet nu", "al een leverancier", etc.','<strong>Discovery Questions:</strong> Gestructureerde vragenlijst voor intake/kwalificatie gesprekken. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simpele tool waarmee prospect zijn business case kan doorrekenen','<strong>Reference Sheet:</strong> Klant referenties, case studies, benchmark resultaten per segment','<strong>Proposal Template:</strong> Gestandaardiseerd voorstel met Sprint A/B/C opties, SLA, commerciële voorwaarden'],
+    labels:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Beschikbare Referenties'],
+    checks:['Pitch Deck (5 slides) klaar in twee varianten (presentatie + leave-behind)','CRM pipeline geconfigureerd met stadia, scoring, en rapportage','Campaign in a Box compleet (email + LinkedIn + phone + Revynu)','Database schoongemaakt, verrijkt, en geïmporteerd in CRM','Sales Enablement Kit beschikbaar (battle card, objections, discovery, ROI, template)','Top-50 target accounts geïdentificeerd en gevalideerd','GTM gereed voor overdracht naar <strong>Outreach & Engagement</strong> (Fase 3)']}
+},
+en:{
+  s1:{bt:['The 5-Slide Structure','Fill In Per Slide','Deck Design Principles'],
+    labels:['Slide 1 — Headline','Slide 2 — Value Proposition','Slide 3 — Proof Point','Slide 4 — Sprint A Offer','Slide 5 — CTA'],
+    ph:['The pain in one sentence. E.g. "73% of hospitals lose 2+ hours per doctor per day on admin"','Copy your PMC value proposition formula here','Case study, benchmark result, or reference customer','Name, duration, deliverables, investment of Sprint A','What action? Book meeting, start assessment, demo?'],
+    checks:['<strong>Maximum 5 slides</strong> — if you need more, your story isn\'t sharp enough','<strong>One message per slide</strong> — no bullet point overload','<strong>Prospect-centric</strong> — it\'s about their problem, not your company','<strong>Internally shareable</strong> — your champion must be able to present this deck without you','<strong>Data-driven</strong> — every claim backed by a number or source'],
+    tip:'Create two variants: a "leave-behind" version (self-explanatory) and a "presentation" version (visual, minimal text). The leave-behind is what your champion forwards internally.'},
+  s2:{bt:['Define Pipeline Stages','CRM Configuration'],
+    labels:['Stage 1 — Lead (0-10%)','Stage 2 — Qualified (10-25%)','Stage 3 — Discovery (25-50%)','Stage 4 — Proposal (50-75%)','Stage 5 — Negotiation (75-90%)','Stage 6 — Won / Lost'],
+    ph:['First contact made. Source identified (Revynu, LinkedIn, event, referral).','ICP match confirmed. Pain validated. Budget indication obtained.','Discovery call completed. Decision makers mapped. Sprint A presented.','Proposal sent. Commercial terms discussed. Timeline aligned.','Legal/procurement. Contract negotiation. Internal client approval.','Deal closed or lost. Document win/loss analysis.'],
+    items:['<strong>CRM Platform:</strong> HubSpot Starter (€20/mo) or Dynamics 365 (existing at client)','<strong>Custom fields:</strong> ICP Score, Segment, Source, Revynu Status, Sprint Type','<strong>Lead scoring:</strong> Firmographic (sector, size) + Behavioral (email opens, clicks, benchmark participation)','<strong>Reporting:</strong> Weekly pipeline review, monthly conversion funnel, quarterly forecast','<strong>Integration:</strong> Email tracking, LinkedIn (via HeyReach), calendar booking'],
+    tip:'Start simple. 6 stages, 5 custom fields, 1 weekly report. Add complexity as the pipeline grows. The HCI database (6,339 contacts) can serve as starting point after cleanup.'},
+  s3:{bt:['Multi-Channel Campaign Components','Email Sequence Structure','LinkedIn Cadence'],
+    elabels:['Email 1 — Pain Trigger (Day 1)','Email 2 — Benchmark Invite (Day 4)','Email 3 — Social Proof (Day 8)','Email 4 — CTA (Day 12)'],
+    eph:['Subject line: pain-based. Body: recognizable situation + question. No pitch.','Revynu benchmark invitation as valuable content. No direct selling.','Case study or reference relevant to the segment. Short, powerful results.','Direct invitation for conversation. Low barrier: "15 minutes, no obligations".'],
+    llabels:['Step 1 — Profile View + Connect','Step 2 — Welcome + Value (Day 2)','Step 3 — Benchmark Invite (Day 5)','Step 4 — Meeting Ask (Day 10)'],
+    lph:['View profile. Send connection request with personal note (max 300 chars).','Thank for connection. Share relevant content or insight. No pitch.','Invite to Revynu benchmark. Position as "free insight" not as sales tool.','Direct ask for conversation. Reference benchmark or previously shared content.'],
+    tip:'The Revynu benchmark converges all channels. Email AND LinkedIn reference the same benchmark. This creates multi-touch without being repetitive.'},
+  s4:{bt:['Data Cleanup Step Plan','Database Quality Metrics'],
+    items:['<strong>Step 1 — Deduplication:</strong> Remove duplicate contacts (name + organisation combo). Check for outdated company names','<strong>Step 2 — ICP Rescoring:</strong> Adjust ICP scores based on PMC target market. A-Enterprise, B-Mid-Market, C-Standard','<strong>Step 3 — Email Enrichment:</strong> Fill missing emails via Apollo, Hunter.io, or Clearbit. Target: >80% coverage','<strong>Step 4 — LinkedIn Matching:</strong> Link contacts to LinkedIn profiles. Essential for multi-channel outreach','<strong>Step 5 — Segmentation:</strong> Label contacts by industry, function, and decision authority','<strong>Step 6 — Import to CRM:</strong> Import clean data into HubSpot/Dynamics with all custom fields'],
+    labels:['Total Contacts','Email Coverage (%)','LinkedIn Match (%)','ICP A-Contacts','Engagement Baseline'],
+    tip:'Start with your Top-50 accounts (ICP A). Manually enrich and validate. Automate the rest via tooling. Quality > quantity in the first campaign round.'},
+  s5:{bt:['Enablement Documents','Fill In Per Document','GTM Readiness Checklist'],
+    items:['<strong>Battle Card (1-pager):</strong> Market, pain, solution, differentiators, pricing, vs competitors. Always at hand','<strong>Objection Handling Guide:</strong> Top-10 objections + response scripts. "Too expensive", "not now", "already have a vendor", etc.','<strong>Discovery Questions:</strong> Structured questionnaire for intake/qualification calls. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simple tool for prospects to calculate their business case','<strong>Reference Sheet:</strong> Customer references, case studies, benchmark results per segment','<strong>Proposal Template:</strong> Standardized proposal with Sprint A/B/C options, SLA, commercial terms'],
+    labels:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Available References'],
+    checks:['Pitch Deck (5 slides) ready in two variants (presentation + leave-behind)','CRM pipeline configured with stages, scoring, and reporting','Campaign in a Box complete (email + LinkedIn + phone + Revynu)','Database cleaned, enriched, and imported into CRM','Sales Enablement Kit available (battle card, objections, discovery, ROI, template)','Top-50 target accounts identified and validated','GTM ready for handover to <strong>Outreach & Engagement</strong> (Phase 3)']}
+}
+};
+
+var _origGtmLang=applyGtmLang;
+applyGtmLang=function(l){
+  _origGtmLang(l);
+  var d=gtmDeep[l];if(!d)return;
+  [['s1',0],['s2',1],['s3',2],['s4',3],['s5',4]].forEach(function(pair){
+    var s=d[pair[0]],idx=pair[1];
+    var panel=document.getElementById('step'+idx);if(!panel||!s)return;
+    var allBT=panel.querySelectorAll('.block-title');
+    if(s.bt)s.bt.forEach(function(txt,i){if(allBT[i])allBT[i].innerHTML='<span class="bt-dot"></span> '+txt});
+    var blocks=panel.querySelectorAll('.block');
+    if(idx===0){
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph&&s.ph[i])vl.textContent=s.ph[i]});
+      if(blocks[2])blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checks&&s.checks[i])li.innerHTML=s.checks[i]});
+      var tip=panel.querySelector('.tip-box .tip-text');if(tip&&s.tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    }
+    if(idx===1){
+      if(blocks[0])blocks[0].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph&&s.ph[i])vl.textContent=s.ph[i]});
+      if(blocks[1])blocks[1].querySelectorAll('.action-list li').forEach(function(li,i){if(s.items&&s.items[i])li.innerHTML=s.items[i]});
+      var tip=panel.querySelector('.tip-box .tip-text');if(tip&&s.tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    }
+    if(idx===2){
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.elabels&&s.elabels[i])lb.textContent=s.elabels[i];if(vl&&s.eph&&s.eph[i])vl.textContent=s.eph[i]});
+      if(blocks[2])blocks[2].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.llabels&&s.llabels[i])lb.textContent=s.llabels[i];if(vl&&s.lph&&s.lph[i])vl.textContent=s.lph[i]});
+      var tips=panel.querySelectorAll('.tip-box .tip-text');
+      if(tips.length>0&&s.tip)tips[tips.length-1].innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    }
+    if(idx===3){
+      if(blocks[0])blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.items&&s.items[i])li.innerHTML=s.items[i]});
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i]});
+      var tip=panel.querySelector('.tip-box .tip-text');if(tip&&s.tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    }
+    if(idx===4){
+      if(blocks[0])blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.items&&s.items[i])li.innerHTML=s.items[i]});
+      if(blocks[1])blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');if(lb&&s.labels&&s.labels[i])lb.textContent=s.labels[i]});
+      if(blocks[2])blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checks&&s.checks[i])li.innerHTML=s.checks[i]});
+    }
+  });
+};
+
 </script>
 </body>
 </html>
