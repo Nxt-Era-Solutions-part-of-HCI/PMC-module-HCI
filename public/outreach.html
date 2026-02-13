@@ -428,13 +428,13 @@ function goStep(i){if(currentStep!==i)completedSteps.add(currentStep);currentSte
 document.querySelectorAll('.step-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
 document.querySelectorAll('.step-tab').forEach((t,j)=>{t.classList.remove('active','completed');if(j===i)t.classList.add('active');else if(completedSteps.has(j))t.classList.add('completed')});
 const pct=(completedSteps.size/totalSteps)*100;document.getElementById('progressFill').style.width=pct+'%';
-document.getElementById('progressLabel').textContent=completedSteps.size+' / '+totalSteps+' afgerond';
+document.getElementById('progressLabel').textContent=completedSteps.size+' / '+totalSteps+(pageI18n[pageLang]||pageI18n.nl).progress;
 document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'start'});updateCtx()}
 
 function completeOutreach(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
-document.getElementById('progressLabel').textContent='5 / 5 afgerond — Outreach Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
+document.getElementById('progressLabel').textContent='5 / 5'+(pageI18n[pageLang]||pageI18n.nl).progressDone;document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-alert('Outreach & Engagement afgerond! ✓\n\nGereed voor Fase 4: Sales Executie.\nDeze module wordt binnenkort toegevoegd.')}
+alert(pageI18n[pageLang].alertMsg)}
 
 /* ═══ AI ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;
@@ -467,8 +467,194 @@ function toggleAI(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.
 function updateCtx(){document.getElementById('aiCtxText').textContent=`${aiTxt[aiLang].ctxPre} ${currentStep+1} — ${stepNames[aiLang][currentStep]}`}
 function setAILang(l){aiLang=l;const t=aiTxt[l];document.getElementById('aiLangNL').classList.toggle('active',l==='nl');document.getElementById('aiLangEN').classList.toggle('active',l==='en');
 document.getElementById('aiInput').placeholder=t.ph;document.getElementById('aiSendBtn').textContent=t.send;
-document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');updateCtx();if(aiRec)aiRec.lang=t.sl}
-function setPageLang(l){document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l)}
+document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');updateCtx();if(aiRec)aiRec.lang=t.sl;
+if(pageLang!==l){setPageLang(l)}}
+
+/* ═══ PAGE LANGUAGE (FULL BILINGUAL) ═══ */
+let pageLang='nl';
+const pageI18n={
+nl:{
+  back:'← Terug naar overzicht',
+  kicker:'Fase 3 — Multi-Channel Executie',
+  title:'Outreach & <em>Engagement</em>',
+  subtitle:'Van voorbereiding naar actie. Multi-channel campagnes draaien, Revynu benchmarks deployen, leads converteren. Elke interactie meetbaar, elk kanaal gecoördineerd.',
+  progress:' afgerond', progressDone:' afgerond — Outreach Compleet!',
+  journey:[['PMC Creatie ✓','Afgerond'],['GTM Voorbereiding ✓','Afgerond'],['Outreach & Engagement','5 kanalen'],['Sales Executie','CMO→FMO']],
+  tabs:[['Revynu','Benchmark'],['Email','Campagnes'],['LinkedIn','Outreach'],['Telefoon','& Netwerk'],['Nurturing','& Conversie']],
+  prev:'← Vorige',
+  navNext:['Volgende: Email Campagnes →','Volgende: LinkedIn →','Volgende: Telefoon & Netwerk →','Volgende: Nurturing & Conversie →',''],
+  navPrev:['','← Revynu Benchmark','← Email Campagnes','← LinkedIn','← Telefoon & Netwerk'],
+  completBtn:'✓ Outreach Afronden → Start Sales Executie',
+  alertMsg:'Outreach & Engagement afgerond! ✓\n\nGereed voor Fase 4: Sales Executie.\nDeze module wordt binnenkort toegevoegd.',
+  s1:{title:'Revynu Benchmark Deployment',desc:'De benchmark is het convergentiepunt van alle kanalen. 62% response rate vs 2-5% cold outreach. Setup, uitnodiging, en opvolging.',
+    blocks:['Benchmark Performance Metrics','Benchmark Setup (4 Weken)','Benchmark Configuratie'],
+    metricLabels:['Response Rate','Setup Doorlooptijd','vs Cold Outreach','/maand investering'],
+    cadence:[['Week 1 — Discovery & Build','<strong>Benchmark ontwerp</strong> op basis van PMC doelmarkt. Sector-specifieke vragen, KPI\'s, vergelijkingsdata samenstellen.'],['Week 2 — Channel Setup','<strong>Uitnodiging materialen</strong> maken: email template, LinkedIn bericht, landing page. Alle kanalen verwijzen naar benchmark.'],['Week 3 — Campaign Launch','<strong>Multi-channel uitnodiging</strong> starten. Email sequences + LinkedIn outreach + telefoon opvolging gelijktijdig.'],['Week 4 — Lead Handoff','<strong>Benchmark rapporten</strong> genereren. Gepersonaliseerd rapport per deelnemer. Follow-up gesprek inplannen → Sprint A.']],
+    canvas:['Benchmark Thema','Doelgroep Segment','KPI\'s / Vergelijkingspunten','Revynu Tier','Target Deelnemers'],
+    ph:['Bijv. "AI Readiness", "Security Maturity", "Cloud Adoption", "Digital Transformation"','Welk PMC segment? Welke functies uitnodigen?','Welke 5-8 meetpunten worden vergeleken? Sector benchmarks beschikbaar?','Starter (€349), Engage (€1.250), Scale (€2.750), Enterprise (€4.500)?','Hoeveel benchmark deelnemers in eerste ronde? (Start: 25-50)'],
+    tip:'De benchmark transformeert cold outreach in warm engagement. De prospect krijgt waardevolle data terug — je verkoopt niets, je biedt inzicht. Het follow-up gesprek over het rapport is je natuurlijke overgang naar Sprint A.',
+    tools:['Revynu Platform','Benchmark Template','Landing Page','Email Templates']},
+  s2:{title:'Email Campagnes',desc:'Geautomatiseerde sequences die pijn triggeren, waarde bieden, en converteren naar gesprekken. Deliverability is koning — zonder inbox placement geen resultaat.',
+    blocks:['Email Sequence — 6-Touch Cadence','Deliverability & Tooling'],
+    cadence:[['Dag 1 — Pain Trigger','<strong>Herkenbare pijn</strong> in de subject line. Korte body, één vraag. Geen pitch, geen bijlage.'],['Dag 4 — Benchmark Invite','<strong>Revynu benchmark</strong> uitnodiging als waarde. "Vergelijk uzelf met 50+ peers in uw sector."'],['Dag 8 — Social Proof','<strong>Case study</strong> of benchmark resultaat. Concreet: "Klant X ging van A naar B in 8 weken."'],['Dag 12 — Insight Share','<strong>Relevante data</strong> of sector trend. Positioneer als expert, niet als verkoper.'],['Dag 17 — Soft CTA','<strong>"15 minuten"</strong> gesprek aanbieden. Geen commitment, wel waarde: "deel benchmark inzichten."'],['Dag 24 — Breakup','<strong>Laatste bericht.</strong> Eerlijk: "Ik wil niet blijven mailen als het niet relevant is." Vaak hoogste response.']],
+    actions:['<strong>Email warmup:</strong> 2-3 weken warmup per inbox vóór eerste campagne. Gebruik Instantly of Smartlead','<strong>Inbox rotatie:</strong> Minimaal 3 inboxen per campagne. Max 30 emails/dag per inbox','<strong>SPF/DKIM/DMARC:</strong> DNS records correct configureren. Zonder = spam folder','<strong>Personalisatie:</strong> Eerste regel altijd gepersonaliseerd. Bedrijfsnaam, sector, recente trigger','<strong>A/B testing:</strong> Elke email 2 subject line varianten. Optimaliseer na 50+ sends','<strong>Tracking:</strong> Open rate >40%, reply rate >5%, bounce rate <3%'],
+    canvas:['Email Tooling','Sending Domains'],
+    ph:['Smartlead / Instantly / Reply.io? Welke tool voor inbox warmup en sequencing?','Hoeveel domeinen? Bijv. try-bedrijfsnaam.com, bedrijfsnaam-mail.com'],
+    tip:'De "breakup email" (dag 24) genereert vaak de hoogste response rate. Mensen voelen urgentie als de deur sluit. Maak hem oprecht, niet manipulatief.',
+    tools:['Smartlead','Instantly','Email Warmup','A/B Templates','DNS Setup Guide']},
+  s3:{title:'LinkedIn Outreach',desc:'Het B2B kanaal bij uitstek voor C-level engagement. Profiel optimalisatie, connectie strategie, content engagement, en geautomatiseerde cadence.',
+    blocks:['LinkedIn Cadence — 8 Touchpoints','LinkedIn Configuratie'],
+    cadence:[['Touch 1 — Profile View','<strong>Bekijk profiel.</strong> Geen actie. Prospect ziet notificatie. Wekt nieuwsgierigheid.'],['Touch 2 — Connect (Dag 2)','<strong>Connectie verzoek</strong> met persoonlijke noot (max 300 tekens). Refereer aan gedeelde sector of trigger.'],['Touch 3 — Welcome (Dag 3)','<strong>Bedank voor connect.</strong> Deel relevante content of inzicht. Geen pitch, geen vraag.'],['Touch 4 — Content Engage (Dag 5)','<strong>Reageer op hun content.</strong> Thoughtful comment, niet "great post". Bouw zichtbaarheid op.'],['Touch 5 — Benchmark (Dag 8)','<strong>Revynu benchmark</strong> uitnodiging via DM. Positioneer als waardevolle gratis resource.'],['Touch 6 — Voice Note (Dag 12)','<strong>Persoonlijke voice note</strong> (60 sec). Valt op in inbox. Refereer aan benchmark of content.'],['Touch 7 — Value Add (Dag 16)','<strong>Deel sectordata</strong> of relevant rapport. Positioneer als trusted advisor, niet verkoper.'],['Touch 8 — Meeting Ask (Dag 20)','<strong>Directe vraag</strong> voor 15 minuten gesprek. Refereer aan alle voorgaande waarde.']],
+    canvas:['LinkedIn Accounts','Profiel Optimalisatie','Content Strategie','Daily Limits'],
+    ph:['Hoeveel accounts voor outreach? Multi-account via HeyReach? (Min. 2-3 voor scale)','Headline = waardepropositie, niet functietitel. Banner = social proof of CTA. About = klantperspectief.','1-2 posts/week. Mix van: sector insights, benchmark data, klant resultaten, thought leadership.','Max 25 connectie verzoeken/dag. Max 50 DM\'s/dag. Meer = LinkedIn restricties.'],
+    actions:['<strong>HeyReach:</strong> Multi-account LinkedIn automation. Inbox rotatie, campagne tracking','<strong>Dripify / Expandi:</strong> Alternatieven voor smaller scale outreach','<strong>Sales Navigator:</strong> Essential voor advanced filtering en InMail credits'],
+    tip:'LinkedIn voice notes hebben 3x hogere response rate dan tekst DM\'s. 60 seconden, spreek de naam uit, refereer aan iets specifieks. Dit schaalt niet, maar voor top-20 accounts is het goud waard.',
+    tools:['HeyReach','Sales Navigator','LinkedIn Profile Templates','Content Calendar']},
+  s4:{title:'Telefoon & Netwerk Activatie',desc:'Telefoon als versneller, niet als koud kanaal. Altijd na een digitale touchpoint. Plus: activatie van het HCI C-level netwerk voor warme intro\'s.',
+    blocks:['Telefoon Scripts (3 Varianten)','Netwerk Activatie'],
+    scriptCanvas:['Script 1 — Warm Follow-Up','Script 2 — Benchmark Opvolging','Script 3 — Voicemail','Objection Responses'],
+    scriptPh:['\"Hoi [naam], ik bel even nav mijn email/LinkedIn bericht over [topic]. Heeft u die gezien? [Pauze] Reden dat ik bel: we doen een benchmark in uw sector over [thema]. Kan ik u in 2 minuten vertellen wat dat inhoudt?\"','\"Dag [naam], u heeft meegedaan aan onze [thema] benchmark. Uw rapport staat klaar. Kan ik 15 minuten inplannen om de highlights door te nemen? Ik kan u laten zien hoe u scoort vs uw peers.\"','\"Dag [naam], [uw naam] van [bedrijf]. Kort bericht: ik heb een benchmark rapport klaarstaan over [thema] specifiek voor [sector]. U kunt me bereiken op [nummer] of ik stuur de details per mail. Fijne dag.\"','Top-3: \"Geen interesse\" → \"Geen tijd\" → \"Stuur maar een mail\" — response scripts per bezwaar'],
+    actions:['<strong>HCI C-Level Netwerk:</strong> 30+ jaar opgebouwde relaties. Identificeer welke contacten warme intro\'s kunnen doen naar target accounts','<strong>Partner Netwerk:</strong> Vendor AE\'s, partner managers, en channel contacten die mee kunnen introduceren','<strong>Event Activatie:</strong> Relevante sector events, roundtables, webinars als ontmoetingspunt','<strong>Referral Programma:</strong> Bestaande klanten vragen om introductie bij peers. Meest effectieve kanaal na Revynu','<strong>Advisory Board:</strong> Onafhankelijke adviseurs of sector experts die credibility toevoegen'],
+    canvas:['Top-10 Netwerk Intro\'s','Komende Events'],
+    ph:['Welke 10 personen uit je netwerk kunnen de meest waardevolle intro\'s doen? Naam + target + relatie','Welke sector events in de komende 3 maanden? Waar zijn je targets aanwezig?'],
+    tip:'Bel NOOIT koud. Altijd na minimaal 2 digitale touchpoints (email + LinkedIn). De prospect moet je naam herkennen. "Warm calling" converteert 5x beter dan cold calling.',
+    tools:['Call Scripts','HCI Netwerk Map','Event Calendar','Referral Templates']},
+  s5:{title:'Lead Nurturing & Conversie',desc:'Niet elke lead converteert in de eerste campagne. Nurturing flows, pipeline tracking, conversie optimalisatie, en performance analytics.',
+    blocks:['Nurturing Flows','Conversie Tracking & KPI\'s','Outreach & Engagement Completeness Checklist'],
+    actions:['<strong>Flow 1 — No Response:</strong> Na 6-touch sequence geen reactie? Wacht 30 dagen, dan nieuwe trigger-based sequence met ander thema of angle','<strong>Flow 2 — Benchmark Compleet:</strong> Deelnemer heeft benchmark ingevuld? Automatisch rapport sturen + 48h later bellen voor gesprek over resultaten','<strong>Flow 3 — Engaged but Not Ready:</strong> Prospect reageert positief maar is "nog niet zover"? Maandelijkse value-add email (sector data, events, content) tot timing klopt','<strong>Flow 4 — Lost/Stale:</strong> Deal gestagneerd of verloren? 90-dagen nurture met focus op nieuwe triggers, product updates, sector veranderingen','<strong>Flow 5 — Champion Left:</strong> Je contactpersoon verandert van baan? Dubbele actie: follow champion naar nieuwe organisatie + hercontact bij oude organisatie'],
+    canvas:['Outreach Volume','Response Rate','Meeting Conversie','Pipeline Velocity','Channel Attribution'],
+    ph:['Hoeveel prospects per week benaderd? Per kanaal? Target: 50-100/week','Email: >5% reply. LinkedIn: >15% accept. Benchmark: >62% response. Telefoon: >30% connect','% van responses dat converteert naar gesprek? Target: >25% van positieve responses','Gemiddelde tijd van eerste contact tot Stage 3 (Discovery)? Target: <4 weken','Welk kanaal converteert het best? Multi-touch attribution per deal'],
+    checklist:['Revynu benchmark geconfigureerd, uitnodigingen verstuurd, eerste rapporten gegenereerd','Email sequences live — 6-touch cadence draait, deliverability >95%, reply rate >5%','LinkedIn outreach actief — profiel geoptimaliseerd, cadence draait, content gepubliceerd','Telefoon scripts beschikbaar — warm follow-up na digitale touchpoints, benchmark opvolging','Nurturing flows geconfigureerd — no-response, benchmark FU, engaged-not-ready, lost/stale','KPI dashboard operationeel — volume, response, conversie, pipeline velocity, attribution','Outreach gereed voor overdracht naar <strong>Sales Executie</strong> (Fase 4)'],
+    tip:'Meet niet alleen volume maar kwaliteit. 10 goede gesprekken per maand zijn meer waard dan 100 connectie verzoeken. Pipeline velocity (tijd van lead → discovery) is de belangrijkste metric.',
+    tools:['HubSpot Workflows','n8n Automation','Analytics Dashboard','Revynu Reports']},
+  welcome:'<p>Welkom bij Outreach & Engagement! 📡</p><p style="margin-top:8px">Tijd om je campagnes te activeren. Ik help je met:</p><p style="margin-top:8px">📊 Revynu Benchmark &nbsp; 📧 Email Sequences<br>💼 LinkedIn Cadence &nbsp; 📞 Telefoon Scripts<br>🔄 Nurturing & Conversie</p><p style="margin-top:8px">Stel je vraag of gebruik de snelknoppen.</p>'
+},
+en:{
+  back:'← Back to overview',
+  kicker:'Phase 3 — Multi-Channel Execution',
+  title:'Outreach & <em>Engagement</em>',
+  subtitle:'From preparation to action. Run multi-channel campaigns, deploy Revynu benchmarks, convert leads. Every interaction measurable, every channel coordinated.',
+  progress:' completed', progressDone:' completed — Outreach Complete!',
+  journey:[['PMC Creation ✓','Completed'],['GTM Preparation ✓','Completed'],['Outreach & Engagement','5 channels'],['Sales Execution','CMO→FMO']],
+  tabs:[['Revynu','Benchmark'],['Email','Campaigns'],['LinkedIn','Outreach'],['Phone','& Network'],['Nurturing','& Conversion']],
+  prev:'← Previous',
+  navNext:['Next: Email Campaigns →','Next: LinkedIn →','Next: Phone & Network →','Next: Nurturing & Conversion →',''],
+  navPrev:['','← Revynu Benchmark','← Email Campaigns','← LinkedIn','← Phone & Network'],
+  completBtn:'✓ Complete Outreach → Start Sales Execution',
+  alertMsg:'Outreach & Engagement complete! ✓\n\nReady for Phase 4: Sales Execution.\nThis module will be added soon.',
+  s1:{title:'Revynu Benchmark Deployment',desc:'The benchmark is the convergence point of all channels. 62% response rate vs 2-5% cold outreach. Setup, invitation, and follow-up.',
+    blocks:['Benchmark Performance Metrics','Benchmark Setup (4 Weeks)','Benchmark Configuration'],
+    metricLabels:['Response Rate','Setup Lead Time','vs Cold Outreach','/month investment'],
+    cadence:[['Week 1 — Discovery & Build','<strong>Benchmark design</strong> based on PMC target market. Sector-specific questions, KPIs, comparison data.'],['Week 2 — Channel Setup','<strong>Invitation materials</strong>: email template, LinkedIn message, landing page. All channels point to benchmark.'],['Week 3 — Campaign Launch','<strong>Multi-channel invitation</strong> start. Email sequences + LinkedIn outreach + phone follow-up simultaneously.'],['Week 4 — Lead Handoff','<strong>Benchmark reports</strong> generated. Personalized report per participant. Schedule follow-up meeting → Sprint A.']],
+    canvas:['Benchmark Theme','Target Segment','KPIs / Comparison Points','Revynu Tier','Target Participants'],
+    ph:['E.g. "AI Readiness", "Security Maturity", "Cloud Adoption", "Digital Transformation"','Which PMC segment? Which roles to invite?','Which 5-8 metrics are compared? Sector benchmarks available?','Starter (€349), Engage (€1,250), Scale (€2,750), Enterprise (€4,500)?','How many benchmark participants in first round? (Start: 25-50)'],
+    tip:'The benchmark transforms cold outreach into warm engagement. The prospect receives valuable data — you sell nothing, you offer insight. The follow-up meeting about the report is your natural transition to Sprint A.',
+    tools:['Revynu Platform','Benchmark Template','Landing Page','Email Templates']},
+  s2:{title:'Email Campaigns',desc:'Automated sequences that trigger pain, offer value, and convert to conversations. Deliverability is king — without inbox placement, no results.',
+    blocks:['Email Sequence — 6-Touch Cadence','Deliverability & Tooling'],
+    cadence:[['Day 1 — Pain Trigger','<strong>Recognizable pain</strong> in the subject line. Short body, one question. No pitch, no attachment.'],['Day 4 — Benchmark Invite','<strong>Revynu benchmark</strong> invitation as value. "Compare yourself with 50+ peers in your sector."'],['Day 8 — Social Proof','<strong>Case study</strong> or benchmark result. Concrete: "Client X went from A to B in 8 weeks."'],['Day 12 — Insight Share','<strong>Relevant data</strong> or sector trend. Position as expert, not as seller.'],['Day 17 — Soft CTA','<strong>"15 minutes"</strong> conversation offer. No commitment, but value: "share benchmark insights."'],['Day 24 — Breakup','<strong>Last message.</strong> Honest: "I don\'t want to keep emailing if it\'s not relevant." Often highest response.']],
+    actions:['<strong>Email warmup:</strong> 2-3 weeks warmup per inbox before first campaign. Use Instantly or Smartlead','<strong>Inbox rotation:</strong> Minimum 3 inboxes per campaign. Max 30 emails/day per inbox','<strong>SPF/DKIM/DMARC:</strong> Configure DNS records correctly. Without = spam folder','<strong>Personalization:</strong> First line always personalized. Company name, sector, recent trigger','<strong>A/B testing:</strong> Each email 2 subject line variants. Optimize after 50+ sends','<strong>Tracking:</strong> Open rate >40%, reply rate >5%, bounce rate <3%'],
+    canvas:['Email Tooling','Sending Domains'],
+    ph:['Smartlead / Instantly / Reply.io? Which tool for inbox warmup and sequencing?','How many domains? E.g. try-companyname.com, companyname-mail.com'],
+    tip:'The "breakup email" (day 24) often generates the highest response rate. People feel urgency when the door closes. Make it sincere, not manipulative.',
+    tools:['Smartlead','Instantly','Email Warmup','A/B Templates','DNS Setup Guide']},
+  s3:{title:'LinkedIn Outreach',desc:'The ultimate B2B channel for C-level engagement. Profile optimization, connection strategy, content engagement, and automated cadence.',
+    blocks:['LinkedIn Cadence — 8 Touchpoints','LinkedIn Configuration'],
+    cadence:[['Touch 1 — Profile View','<strong>View profile.</strong> No action. Prospect sees notification. Creates curiosity.'],['Touch 2 — Connect (Day 2)','<strong>Connection request</strong> with personal note (max 300 chars). Reference shared sector or trigger.'],['Touch 3 — Welcome (Day 3)','<strong>Thank for connect.</strong> Share relevant content or insight. No pitch, no ask.'],['Touch 4 — Content Engage (Day 5)','<strong>Engage with their content.</strong> Thoughtful comment, not "great post". Build visibility.'],['Touch 5 — Benchmark (Day 8)','<strong>Revynu benchmark</strong> invitation via DM. Position as valuable free resource.'],['Touch 6 — Voice Note (Day 12)','<strong>Personal voice note</strong> (60 sec). Stands out in inbox. Reference benchmark or content.'],['Touch 7 — Value Add (Day 16)','<strong>Share sector data</strong> or relevant report. Position as trusted advisor, not seller.'],['Touch 8 — Meeting Ask (Day 20)','<strong>Direct ask</strong> for 15 minute conversation. Reference all previous value.']],
+    canvas:['LinkedIn Accounts','Profile Optimization','Content Strategy','Daily Limits'],
+    ph:['How many accounts for outreach? Multi-account via HeyReach? (Min. 2-3 for scale)','Headline = value proposition, not job title. Banner = social proof or CTA. About = client perspective.','1-2 posts/week. Mix of: sector insights, benchmark data, client results, thought leadership.','Max 25 connection requests/day. Max 50 DMs/day. More = LinkedIn restrictions.'],
+    actions:['<strong>HeyReach:</strong> Multi-account LinkedIn automation. Inbox rotation, campaign tracking','<strong>Dripify / Expandi:</strong> Alternatives for smaller scale outreach','<strong>Sales Navigator:</strong> Essential for advanced filtering and InMail credits'],
+    tip:'LinkedIn voice notes have 3x higher response rate than text DMs. 60 seconds, say the name, reference something specific. This doesn\'t scale, but for top-20 accounts it\'s worth gold.',
+    tools:['HeyReach','Sales Navigator','LinkedIn Profile Templates','Content Calendar']},
+  s4:{title:'Phone & Network Activation',desc:'Phone as accelerator, not as cold channel. Always after a digital touchpoint. Plus: activation of the HCI C-level network for warm introductions.',
+    blocks:['Phone Scripts (3 Variants)','Network Activation'],
+    scriptCanvas:['Script 1 — Warm Follow-Up','Script 2 — Benchmark Follow-Up','Script 3 — Voicemail','Objection Responses'],
+    scriptPh:['"Hi [name], calling to follow up on my email/LinkedIn message about [topic]. Did you see it? [Pause] Reason I call: we\'re running a benchmark in your sector on [theme]. Can I take 2 minutes to explain?"','"Hello [name], you participated in our [theme] benchmark. Your report is ready. Can I schedule 15 minutes to walk through the highlights? I can show how you compare vs your peers."','"Hello [name], [your name] from [company]. Quick message: I have a benchmark report ready about [theme] specifically for [sector]. You can reach me at [number] or I\'ll send details via email. Have a good day."','Top-3: "No interest" → "No time" → "Just send an email" — response scripts per objection'],
+    actions:['<strong>HCI C-Level Network:</strong> 30+ years of built relationships. Identify which contacts can make warm introductions to target accounts','<strong>Partner Network:</strong> Vendor AEs, partner managers, and channel contacts who can co-introduce','<strong>Event Activation:</strong> Relevant sector events, roundtables, webinars as meeting points','<strong>Referral Program:</strong> Ask existing clients for introduction to peers. Most effective channel after Revynu','<strong>Advisory Board:</strong> Independent advisors or sector experts who add credibility'],
+    canvas:['Top-10 Network Intros','Upcoming Events'],
+    ph:['Which 10 people from your network can make the most valuable intros? Name + target + relationship','Which sector events in the next 3 months? Where are your targets present?'],
+    tip:'NEVER call cold. Always after at least 2 digital touchpoints (email + LinkedIn). The prospect must recognize your name. "Warm calling" converts 5x better than cold calling.',
+    tools:['Call Scripts','HCI Network Map','Event Calendar','Referral Templates']},
+  s5:{title:'Lead Nurturing & Conversion',desc:'Not every lead converts in the first campaign. Nurturing flows, pipeline tracking, conversion optimization, and performance analytics.',
+    blocks:['Nurturing Flows','Conversion Tracking & KPIs','Outreach & Engagement Completeness Checklist'],
+    actions:['<strong>Flow 1 — No Response:</strong> No reaction after 6-touch sequence? Wait 30 days, then new trigger-based sequence with different theme or angle','<strong>Flow 2 — Benchmark Complete:</strong> Participant completed benchmark? Auto-send report + call 48h later to discuss results','<strong>Flow 3 — Engaged but Not Ready:</strong> Prospect responds positively but "not yet ready"? Monthly value-add email (sector data, events, content) until timing is right','<strong>Flow 4 — Lost/Stale:</strong> Deal stagnated or lost? 90-day nurture focused on new triggers, product updates, sector changes','<strong>Flow 5 — Champion Left:</strong> Your contact changes jobs? Double action: follow champion to new org + re-engage at old org'],
+    canvas:['Outreach Volume','Response Rate','Meeting Conversion','Pipeline Velocity','Channel Attribution'],
+    ph:['How many prospects approached per week? Per channel? Target: 50-100/week','Email: >5% reply. LinkedIn: >15% accept. Benchmark: >62% response. Phone: >30% connect','% of responses converting to conversation? Target: >25% of positive responses','Average time from first contact to Stage 3 (Discovery)? Target: <4 weeks','Which channel converts best? Multi-touch attribution per deal'],
+    checklist:['Revynu benchmark configured, invitations sent, first reports generated','Email sequences live — 6-touch cadence running, deliverability >95%, reply rate >5%','LinkedIn outreach active — profile optimized, cadence running, content published','Phone scripts available — warm follow-up after digital touchpoints, benchmark follow-up','Nurturing flows configured — no-response, benchmark FU, engaged-not-ready, lost/stale','KPI dashboard operational — volume, response, conversion, pipeline velocity, attribution','Outreach ready for handoff to <strong>Sales Execution</strong> (Phase 4)'],
+    tip:'Measure not just volume but quality. 10 good conversations per month are worth more than 100 connection requests. Pipeline velocity (time from lead → discovery) is the most important metric.',
+    tools:['HubSpot Workflows','n8n Automation','Analytics Dashboard','Revynu Reports']},
+  welcome:'<p>Welcome to Outreach & Engagement! 📡</p><p style="margin-top:8px">Time to activate your campaigns. I\'ll help you with:</p><p style="margin-top:8px">📊 Revynu Benchmark &nbsp; 📧 Email Sequences<br>💼 LinkedIn Cadence &nbsp; 📞 Phone Scripts<br>🔄 Nurturing & Conversion</p><p style="margin-top:8px">Ask your question or use the quick buttons.</p>'
+}
+};
+
+function applyPageLang(l){
+  pageLang=l;const t=pageI18n[l];
+  /* Hero */
+  document.querySelector('.back-link').textContent=t.back;
+  document.querySelector('.kicker').textContent=t.kicker;
+  document.querySelector('.page-hero h1').innerHTML=t.title;
+  document.querySelector('.subtitle').textContent=t.subtitle;
+  /* Journey */
+  const jp=document.querySelectorAll('.journey-phase');
+  jp.forEach((p,i)=>{if(t.journey[i]){const txt=p.querySelector('.jp-text');if(txt)txt.childNodes[0].textContent=t.journey[i][0];const sub=p.querySelector('.jp-sub');if(sub)sub.textContent=t.journey[i][1]}});
+  /* Progress */
+  const pl=document.getElementById('progressLabel');
+  if(completedSteps.size<totalSteps)pl.textContent=completedSteps.size+' / '+totalSteps+t.progress;
+  else pl.textContent=totalSteps+' / '+totalSteps+t.progressDone;
+  /* Tabs */
+  document.querySelectorAll('.step-tab').forEach((tab,i)=>{if(t.tabs[i]){const lbl=tab.querySelector('.st-label');lbl.innerHTML=t.tabs[i][0]+'<br>'+t.tabs[i][1]}});
+  /* Steps */
+  const steps=[t.s1,t.s2,t.s3,t.s4,t.s5];
+  document.querySelectorAll('.step-panel').forEach((panel,si)=>{
+    const s=steps[si];if(!s)return;
+    /* Header */
+    const h2=panel.querySelector('h2');if(h2)h2.textContent=s.title;
+    const sd=panel.querySelector('.step-desc');if(sd)sd.textContent=s.desc;
+    /* Block titles */
+    const bt=panel.querySelectorAll('.block-title');
+    if(s.blocks)bt.forEach((b,i)=>{if(s.blocks[i]){const sp=b.querySelector('.bt-dot');b.innerHTML='';if(sp)b.appendChild(sp);else{const ns=document.createElement('span');ns.className='bt-dot';b.appendChild(ns)}b.appendChild(document.createTextNode(' '+s.blocks[i]))}});
+    /* Metric labels (step 1) */
+    if(s.metricLabels){panel.querySelectorAll('.metric-label').forEach((m,i)=>{if(s.metricLabels[i])m.textContent=s.metricLabels[i]})}
+    /* Cadence items */
+    if(s.cadence){panel.querySelectorAll('.cadence-day').forEach((d,i)=>{if(s.cadence[i]){const lb=d.querySelector('.cadence-label');if(lb)lb.textContent=s.cadence[i][0];const tx=d.querySelector('.cadence-text');if(tx)tx.innerHTML=s.cadence[i][1]}})}
+    /* Canvas labels + placeholders */
+    const blocks=panel.querySelectorAll('.block');
+    /* Script canvas for step 4 */
+    if(s.scriptCanvas){const firstBlock=blocks[0];if(firstBlock){const cf=firstBlock.querySelectorAll('.canvas-field');cf.forEach((f,i)=>{if(s.scriptCanvas[i]){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.scriptCanvas[i]}if(s.scriptPh&&s.scriptPh[i]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.scriptPh[i]}})}}
+    /* Regular canvas (from last config block) */
+    if(s.canvas&&!s.scriptCanvas){
+      /* Find canvas fields in the right block */
+      let configBlock=null;
+      for(let bi=blocks.length-1;bi>=0;bi--){if(blocks[bi].querySelectorAll('.canvas-field').length>0){configBlock=blocks[bi];break}}
+      if(configBlock){const cf=configBlock.querySelectorAll('.canvas-field');let ci=0;cf.forEach(f=>{if(ci<s.canvas.length){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.canvas[ci];if(s.ph&&s.ph[ci]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.ph[ci]}ci++}})}}
+    else if(s.canvas&&s.scriptCanvas){
+      /* Step 4: second block has canvas + actions */
+      if(blocks.length>1){const cf=blocks[1].querySelectorAll('.canvas-field');cf.forEach((f,i)=>{if(s.canvas[i]){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.canvas[i]}if(s.ph&&s.ph[i]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.ph[i]}})}}
+    /* Action lists */
+    const al=panel.querySelectorAll('.action-list');
+    if(s.actions&&al.length>0){const items=al[0].querySelectorAll('li');items.forEach((li,i)=>{if(s.actions[i])li.innerHTML=s.actions[i]})}
+    if(s.checklist){const lastAl=al[al.length-1];if(lastAl){const items=lastAl.querySelectorAll('li');items.forEach((li,i)=>{if(s.checklist[i])li.innerHTML=s.checklist[i]})}}
+    /* Tip */
+    const tips=panel.querySelectorAll('.tip-text');
+    const lastTip=tips[tips.length-1];
+    if(lastTip&&s.tip)lastTip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    /* Tool pills */
+    if(s.tools){panel.querySelectorAll('.tool-pill').forEach((p,i)=>{if(s.tools[i])p.textContent=s.tools[i]})}
+    /* Nav buttons */
+    const navBtns=panel.querySelectorAll('.nav-btn');
+    if(navBtns.length>=2){
+      if(si===0){navBtns[0].textContent=t.prev;navBtns[1].textContent=t.navNext[si]}
+      else if(si===4){navBtns[0].textContent=t.navPrev[si];navBtns[1].textContent=t.completBtn}
+      else{navBtns[0].textContent=t.navPrev[si];navBtns[1].textContent=t.navNext[si]}
+    }
+  });
+  /* AI welcome */
+  const firstMsg=document.querySelector('#aiChat .ai-msg.assistant .ai-msg-body');
+  if(firstMsg)firstMsg.innerHTML=t.welcome;
+}
+
+
+function setPageLang(l){document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l);applyPageLang(l)}
 
 let aiRec=null,aiRecording=false;
 if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;

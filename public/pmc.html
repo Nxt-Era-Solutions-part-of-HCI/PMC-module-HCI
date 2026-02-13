@@ -372,7 +372,7 @@ header { padding:20px 40px; display:flex; align-items:center; justify-content:sp
 
   <!-- STEP 5 -->
   <div class="step-panel" id="step4">
-    <div class="step-header-block"><div class="step-icon">🤝</div><div class="step-header-text"><h2>Strategic Partnerships & Funding</h2><p class="step-desc">Vendor alignment, channel partners, funding routes.</p></div></div>
+    <div class="step-header-block"><div class="step-icon">🤝</div><div class="step-header-text"><h2>Strategische Partnerships & Funding</h2><p class="step-desc">Vendor afstemming, channel partners, financieringsroutes.</p></div></div>
     <div class="content-grid">
       <div class="block"><div class="block-title"><span class="bt-dot"></span> Vendor / Ecosystem</div>
         <div class="canvas-field"><div class="canvas-label">Primaire Vendor</div><div class="canvas-value placeholder">Microsoft, AWS, eigen stack?</div></div>
@@ -466,15 +466,14 @@ let aiLang='nl',aiHistory=[],aiOpen=false;
 
 const aiTxt={nl:{ph:'Stel je vraag over de PMC...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Leg uit wat ik moet doen in deze stap en geef praktische tips.',example:'Geef een concreet ingevuld voorbeeld voor deze PMC stap, voor een B2B tech bedrijf dat de EU markt betreedt.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
-err:'⚠️ Kon geen verbinding maken met Claude. Configureer je API key of probeer opnieuw.',nokey:'⚠️ <strong>API key niet geconfigureerd.</strong><br><br>Om de AI Assistant te activeren, open dit bestand in een code editor en vul je Claude API key in bij <code>const API_KEY = \'\'</code> (regel in de script sectie).<br><br>Je kunt een API key aanmaken op <a href="https://console.anthropic.com" target="_blank" style="color:var(--hci-gold)">console.anthropic.com</a>.',
+err:'⚠️ Kon geen verbinding maken met Claude. Probeer opnieuw.',
 u:'Jij',a:'HCI Assistant',sl:'nl-NL',vd:'Microfoon geweigerd.',vu:'Spraak niet ondersteund. Probeer Chrome.'},
 en:{ph:'Ask about the PMC...',send:'Send',ctxPre:'Step',qa:[{l:'💡 Help with step',k:'help'},{l:'📝 Show example',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Explain what I need to do in this step and give practical tips.',example:'Give a concrete example for this PMC step, for a B2B tech company entering the EU market.',review:'What are common mistakes in this step? What should I watch out for?'},
-err:'⚠️ Could not connect to Claude. Check API key or try again.',nokey:'⚠️ <strong>API key not configured.</strong><br><br>To activate the AI Assistant, open this file in a code editor and enter your Claude API key at <code>const API_KEY = \'\'</code>.<br><br>Get an API key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--hci-gold)">console.anthropic.com</a>.',
+err:'⚠️ Could not connect to Claude. Try again.',
 u:'You',a:'HCI Assistant',sl:'en-GB',vd:'Microphone denied.',vu:'Speech not supported. Try Chrome.'}};
 
-// ▸▸▸ ENTER YOUR CLAUDE API KEY HERE ◂◂◂
-const API_KEY = '';
+const API_ENDPOINT='/api/chat';
 
 function getSysPrompt(){const s=currentStep+1,sn=stepNames[aiLang][currentStep],l=aiLang==='nl'?'Dutch':'English';
 return `You are the HCI AI Assistant in the PMC (Product-Market Combination) Creation Module of HES Consultancy International.
@@ -498,7 +497,8 @@ function updateCtx(){const t=aiTxt[aiLang],sn=stepNames[aiLang][currentStep];doc
 function setAILang(l){aiLang=l;const t=aiTxt[l];document.getElementById('aiLangNL').classList.toggle('active',l==='nl');document.getElementById('aiLangEN').classList.toggle('active',l==='en');
 document.getElementById('aiInput').placeholder=t.ph;document.getElementById('aiSendBtn').textContent=t.send;
 document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');
-updateCtx();if(aiRec)aiRec.lang=t.sl}
+updateCtx();if(aiRec)aiRec.lang=t.sl;
+if(pageLang!==l){setPageLang(l)}}
 
 /* Voice */
 let aiRec=null,aiRecording=false;
@@ -518,12 +518,11 @@ el.appendChild(d);el.scrollTop=el.scrollHeight}
 async function aiSend(){const inp=document.getElementById('aiInput'),msg=inp.value.trim();if(!msg)return;
 aiAddMsg(msg,'user');inp.value='';inp.style.height='auto';aiHistory.push({role:'user',content:msg});
 const typ=document.getElementById('aiTyping');typ.classList.add('active');document.getElementById('aiSendBtn').disabled=true;document.getElementById('aiVoiceBtn').disabled=true;
-try{if(!API_KEY){typ.classList.remove('active');aiAddMsg(aiTxt[aiLang].nokey,'assistant');return}
-const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,system:getSysPrompt(),messages:aiHistory.slice(-10)})});
-const data=await res.json();if(!res.ok||data.error)throw new Error(data.error?.message||'API error');
-const reply=data.content.map(c=>c.text||'').join('\n');aiHistory.push({role:'assistant',content:reply});
-typ.classList.remove('active');aiAddMsg(fmtReply(reply),'assistant')}
+try{const res=await fetch(API_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},
+body:JSON.stringify({system:getSysPrompt(),messages:aiHistory.slice(-10),language:aiLang})});
+const data=await res.json();if(!res.ok||data.error)throw new Error(data.error||'API error');
+aiHistory.push({role:'assistant',content:data.reply});
+typ.classList.remove('active');aiAddMsg(fmtReply(data.reply),'assistant')}
 catch(e){console.error('AI:',e);typ.classList.remove('active');aiAddMsg(aiTxt[aiLang].err,'assistant')}
 finally{document.getElementById('aiSendBtn').disabled=false;document.getElementById('aiVoiceBtn').disabled=false}}
 
@@ -569,15 +568,15 @@ nl:{
     fillPh:['"Readiness Sprint", "AI Maturity Scan"','Concrete output?','"Platform Deploy", "Secure Foundation"','"Adoption Program", "Managed Service"'],
     pricing:'Pricing Principes',priceList:['<strong>Sprint A laag houden</strong> — voet in de deur','<strong>Sprint B = kernomzet</strong> — prijs op waarde','<strong>Sprint C = recurring</strong> — managed service','<strong>Bundel:</strong> Korting bij A+B+C pakket','<strong>Vendor funding:</strong> Incentives verlagen klantprijs'],
     tip:'Sprint A = Revynu opvolging. Benchmark → urgentie → Sprint A diagnose.',tools:['A-B-C Canvas','Pricing','Vendor Funding']},
-  s5:{title:'Strategic Partnerships & Funding',desc:'Vendor alignment, channel partners, funding routes.',
+  s5:{title:'Strategische Partnerships & Funding',desc:'Vendor afstemming, channel partners, financieringsroutes.',
     vendor:'Vendor / Ecosystem',vLabels:['Primaire Vendor','Solution Area','Certificeringen','Channel Partners','Vendor Contacten'],
     vPh:['Microsoft, AWS, eigen stack?','Welk vendor programma?','Vereist? Gaps?','Resellers, SI\'s?','AE, TSP, Partner Manager?'],
     funding:'Funding & Incentives',fList:['<strong>Vendor funding:</strong> MCI, Azure Accelerate, AWS Credits','<strong>Co-sell:</strong> Marketplace, referral program','<strong>EU funding:</strong> Subsidies, WBSO/RDA','<strong>Sector:</strong> SURF, ZonMw, etc.','<strong>Portal:</strong> Co-sell opportunity, propensity data'],
     tip:'Vendor funding kan Sprint A gratis maken voor de klant.',
     check:'PMC Completeness Checklist',checkList:['Doelmarkt gedefinieerd en gescoord','Kernprobleem gevalideerd (min. 2 bronnen)','Waardepropositie geformuleerd en getest','A-B-C packaging met pricing','Vendor alignment en funding routes','Top-10/20 target accounts','PMC gereed voor <strong>GTM Voorbereiding</strong>'],
-    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']}
+    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']},
+  welcome:'<p>Welkom! 👋 Ik ben de HCI AI Assistant.</p><p style="margin-top:8px">Ik begeleid je bij elke PMC stap met context-aware advies:</p><p style="margin-top:8px">🎯 Doelmarkt &nbsp; 🔥 Pain &nbsp; 💎 Waardepropositie<br>📦 Offer Packaging &nbsp; 🤝 Partnerships</p><p style="margin-top:8px">Gebruik de snelknoppen of stel je vraag.</p>'
 },
-en:{
   kicker:'Phase 1 — Onboarding Module', title:'Product-Market Combination <em>Creation</em>',
   subtitle:'From strategy to a validated, market-ready proposition. 5 building blocks completed sequentially — each with concrete deliverables.',
   progress:' completed', progressDone:' completed — PMC Complete!',
@@ -618,7 +617,8 @@ en:{
     funding:'Funding & Incentives',fList:['<strong>Vendor funding:</strong> MCI, Azure Accelerate, AWS Credits','<strong>Co-sell:</strong> Marketplace, referral programme','<strong>EU funding:</strong> Subsidies, R&D tax credits','<strong>Sector:</strong> SURF, ZonMw, etc.','<strong>Portal:</strong> Co-sell opportunity, propensity data'],
     tip:'Vendor funding can make Sprint A effectively free for the client.',
     check:'PMC Completeness Checklist',checkList:['Target market defined and scored','Core problem validated (min. 2 sources)','Value proposition formulated and tested','A-B-C packaging with pricing','Vendor alignment and funding routes','Top-10/20 target accounts','PMC ready for <strong>GTM Preparation</strong>'],
-    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']}
+    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']},
+  welcome:'<p>Welcome! 👋 I\'m the HCI AI Assistant.</p><p style="margin-top:8px">I\'ll guide you through each PMC step with context-aware advice:</p><p style="margin-top:8px">🎯 Target Market &nbsp; 🔥 Pain &nbsp; 💎 Value Proposition<br>📦 Offer Packaging &nbsp; 🤝 Partnerships</p><p style="margin-top:8px">Use the quick buttons or ask your question.</p>'
 }};
 
 function setPageLang(l){
@@ -645,6 +645,8 @@ function applyPageLang(){
   document.querySelectorAll('.journey-phase').forEach((el,i)=>{const jp=el.querySelectorAll('.jp-text,.jp-sub');if(t.journey[i]){jp[0].textContent=t.journey[i][0];jp[1].textContent=t.journey[i][1]}});
   // Steps content — dynamically update each step panel
   rebuildStep(0,t.s1,t);rebuildStep(1,t.s2,t);rebuildStep(2,t.s3,t);rebuildStep(3,t.s4,t);rebuildStep(4,t.s5,t);
+  // AI welcome
+  if(t.welcome){const wm=document.querySelector('#aiChat .ai-msg.assistant .ai-msg-body');if(wm)wm.innerHTML=t.welcome}
 }
 
 function rebuildStep(idx,s,t){
@@ -658,8 +660,82 @@ function rebuildStep(idx,s,t){
   if(btns[1])btns[1].innerHTML=idx===4?t.completBtn:t.navNext[idx];
   // Tools
   const tools=s.tools;if(tools){const tr=panel.querySelector('.tools-row');if(tr)tr.innerHTML=tools.map(x=>`<span class="tool-pill">${x}</span>`).join('')}
-  // Tips
-  if(s.tip){const tips=panel.querySelectorAll('.tip-box .tip-text');tips.forEach(tip=>{if(tip.innerHTML.includes('HCI Tip'))tip.innerHTML=`<strong>HCI Tip:</strong> ${s.tip}`})}
+  // Tips — update all tip-text elements in this panel
+  if(s.tip){panel.querySelectorAll('.tip-text').forEach(tip=>{tip.innerHTML=`<strong>HCI Tip:</strong> ${s.tip}`})}
+  // Block titles
+  const blocks=panel.querySelectorAll('.block');const allBT=panel.querySelectorAll('.block-title');
+  // Step 1: Doelmarkt
+  if(idx===0){
+    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.canvas}`;
+    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.scoring}`;
+    // Canvas labels + placeholders
+    const cf=blocks[0]?blocks[0].querySelectorAll('.canvas-field'):[];
+    cf.forEach((f,i)=>{if(s.labels&&s.labels[i]){f.querySelector('.canvas-label').textContent=s.labels[i]}if(s.ph&&s.ph[i]){f.querySelector('.canvas-value').textContent=s.ph[i]}});
+    // Score grid
+    const sr=panel.querySelectorAll('.score-row:not(.header)');
+    sr.forEach((r,i)=>{if(s.criteria&&s.criteria[i]){r.querySelector('.sr-label').textContent=s.criteria[i]}if(s.help&&s.help[i]){r.querySelector('.sr-help').textContent=s.help[i]}});
+    // Score grid header
+    const hdr=panel.querySelector('.score-row.header');
+    if(hdr){const lbs=hdr.querySelectorAll('div');if(pageLang==='en'){lbs[0].textContent='Criterion';lbs[2].textContent='Weight';lbs[3].textContent='Explanation'}else{lbs[0].textContent='Criterium';lbs[2].textContent='Weging';lbs[3].textContent='Toelichting'}}
+  }
+  // Step 2: Pain
+  if(idx===1){
+    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.pain}`;
+    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.valid}`;
+    // Pain questions
+    const ql=blocks[0]?blocks[0].querySelectorAll('.action-list li'):[];
+    ql.forEach((li,i)=>{if(s.qs&&s.qs[i])li.innerHTML=s.qs[i]});
+    // Validation sources
+    const sl=blocks[1]?blocks[1].querySelectorAll('.action-list li'):[];
+    sl.forEach((li,i)=>{if(s.sources&&s.sources[i])li.innerHTML=s.sources[i]});
+    // DM block title
+    const dmBT=panel.querySelectorAll('.block-title');
+    if(dmBT[2])dmBT[2].innerHTML=`<span class="bt-dot"></span> ${s.dm}`;
+    // DM labels + placeholders
+    const dmFields=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
+    dmFields.forEach((f,i)=>{if(s.dmLabels&&s.dmLabels[i]){f.querySelector('.canvas-label').textContent=s.dmLabels[i]}if(s.dmPh&&s.dmPh[i]){f.querySelector('.canvas-value').textContent=s.dmPh[i]}});
+  }
+  // Step 3: Value Proposition
+  if(idx===2){
+    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.formula}`;
+    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.comp}`;
+    if(allBT[2])allBT[2].innerHTML=`<span class="bt-dot"></span> ${s.test}`;
+    // Component canvas
+    const cf=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
+    cf.forEach((f,i)=>{if(s.compLabels&&s.compLabels[i]){f.querySelector('.canvas-label').textContent=s.compLabels[i]}if(s.compPh&&s.compPh[i]){f.querySelector('.canvas-value').textContent=s.compPh[i]}});
+    // Test checks
+    const cl=blocks[2]?blocks[2].querySelectorAll('.action-list li'):[];
+    cl.forEach((li,i)=>{if(s.checks&&s.checks[i])li.innerHTML=s.checks[i]});
+  }
+  // Step 4: Offer Packaging
+  if(idx===3){
+    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.sprints}`;
+    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.fill}`;
+    if(allBT[2])allBT[2].innerHTML=`<span class="bt-dot"></span> ${s.pricing}`;
+    // Offer cards
+    if(s.cards){panel.querySelectorAll('.offer-card').forEach((c,i)=>{if(s.cards[i]){c.querySelector('.oc-title').textContent=s.cards[i].t;c.querySelector('.oc-dur').textContent=s.cards[i].d;c.querySelector('.oc-desc').textContent=s.cards[i].desc;c.querySelectorAll('.oc-dels li').forEach((li,j)=>{if(s.cards[i].dels&&s.cards[i].dels[j])li.textContent=s.cards[i].dels[j]})}})}
+    // Fill canvas
+    const cf=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
+    cf.forEach((f,i)=>{if(s.fillLabels&&s.fillLabels[i]){f.querySelector('.canvas-label').textContent=s.fillLabels[i]}if(s.fillPh&&s.fillPh[i]){f.querySelector('.canvas-value').textContent=s.fillPh[i]}});
+    // Pricing list
+    const pl=blocks[2]?blocks[2].querySelectorAll('.action-list li'):[];
+    pl.forEach((li,i)=>{if(s.priceList&&s.priceList[i])li.innerHTML=s.priceList[i]});
+  }
+  // Step 5: Partnerships
+  if(idx===4){
+    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.vendor}`;
+    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.funding}`;
+    // Vendor canvas
+    const cf=blocks[0]?blocks[0].querySelectorAll('.canvas-field'):[];
+    cf.forEach((f,i)=>{if(s.vLabels&&s.vLabels[i]){f.querySelector('.canvas-label').textContent=s.vLabels[i]}if(s.vPh&&s.vPh[i]){f.querySelector('.canvas-value').textContent=s.vPh[i]}});
+    // Funding list
+    const fl=blocks[1]?blocks[1].querySelectorAll('.action-list li'):[];
+    fl.forEach((li,i)=>{if(s.fList&&s.fList[i])li.innerHTML=s.fList[i]});
+    // Checklist block title + items
+    const allBlocks=panel.querySelectorAll('.block');
+    if(allBlocks[2]){const chBT=allBlocks[2].querySelector('.block-title');if(chBT)chBT.innerHTML=`<span class="bt-dot"></span> ${s.check}`;
+    const cl=allBlocks[2].querySelectorAll('.action-list li');cl.forEach((li,i)=>{if(s.checkList&&s.checkList[i])li.innerHTML=s.checkList[i]})}
+  }
 }
 </script>
 </body>

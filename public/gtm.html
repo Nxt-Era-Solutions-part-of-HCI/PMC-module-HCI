@@ -437,13 +437,13 @@ function goStep(i){if(currentStep!==i)completedSteps.add(currentStep);currentSte
 document.querySelectorAll('.step-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
 document.querySelectorAll('.step-tab').forEach((t,j)=>{t.classList.remove('active','completed');if(j===i)t.classList.add('active');else if(completedSteps.has(j))t.classList.add('completed')});
 const pct=(completedSteps.size/totalSteps)*100;document.getElementById('progressFill').style.width=pct+'%';
-document.getElementById('progressLabel').textContent=completedSteps.size+' / '+totalSteps+' afgerond';
+document.getElementById('progressLabel').textContent=completedSteps.size+' / '+totalSteps+(pageI18n[pageLang]||pageI18n.nl).progress;
 document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'start'});updateCtx()}
 
 function completeGTM(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
-document.getElementById('progressLabel').textContent='5 / 5 afgerond — GTM Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
+document.getElementById('progressLabel').textContent='5 / 5'+(pageI18n[pageLang]||pageI18n.nl).progressDone;document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-if(confirm('GTM Voorbereiding afgerond! ✓\n\nDoorschakelen naar Fase 3: Outreach & Engagement?')){window.location.href='/outreach'}}
+if(confirm(pageI18n[pageLang].confirmMsg)){window.location.href='/outreach'}}
 
 /* ═══ AI ASSISTANT ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;
@@ -476,8 +476,185 @@ function toggleAI(){aiOpen=!aiOpen;document.getElementById('aiPanel').classList.
 function updateCtx(){document.getElementById('aiCtxText').textContent=`${aiTxt[aiLang].ctxPre} ${currentStep+1} — ${stepNames[aiLang][currentStep]}`}
 function setAILang(l){aiLang=l;const t=aiTxt[l];document.getElementById('aiLangNL').classList.toggle('active',l==='nl');document.getElementById('aiLangEN').classList.toggle('active',l==='en');
 document.getElementById('aiInput').placeholder=t.ph;document.getElementById('aiSendBtn').textContent=t.send;
-document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');updateCtx();if(aiRec)aiRec.lang=t.sl}
-function setPageLang(l){document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l)}
+document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');updateCtx();if(aiRec)aiRec.lang=t.sl;
+if(pageLang!==l){setPageLang(l)}}
+
+/* ═══ PAGE LANGUAGE (FULL BILINGUAL) ═══ */
+let pageLang='nl';
+const pageI18n={
+nl:{
+  back:'← Terug naar overzicht',
+  kicker:'Fase 2 — Go-to-Market',
+  title:'GTM <em>Voorbereiding</em>',
+  subtitle:'Van PMC naar markt. Pitch deck bouwen, CRM pipeline opzetten, Campaign in a Box samenstellen, en de database klaarmaken voor outreach.',
+  progress:' afgerond', progressDone:' afgerond — GTM Compleet!',
+  journey:[['PMC Creatie ✓','Afgerond'],['GTM Voorbereiding','5 deliverables'],['Outreach & Engagement','Multi-channel'],['Sales Executie','CMO→FMO']],
+  tabs:[['Pitch','Deck'],['CRM','Pipeline'],['Campaign','in a Box'],['Database','Voorbereiding'],['Sales','Enablement']],
+  prev:'← Vorige',
+  navNext:['Volgende: CRM Pipeline →','Volgende: Campaign Box →','Volgende: Database →','Volgende: Sales Enablement →',''],
+  navPrev:['','← Pitch Deck','← CRM Pipeline','← Campaign Box','← Database'],
+  completBtn:'✓ GTM Afronden → Start Outreach',
+  confirmMsg:'GTM Voorbereiding afgerond! ✓\n\nDoorschakelen naar Fase 3: Outreach & Engagement?',
+  s1:{title:'Pitch Deck (Max 5 Slides)',desc:'Eén deck, vijf slides, geen ruis. Alles wat een prospect nodig heeft om intern te presenteren. Gebouwd op je PMC waardepropositie.',
+    blocks:['Slide Canvas','Deck Varianten'],
+    canvas:['Slide 1 — Headline','Slide 2 — Waardepropositie','Slide 3 — Proof Point','Slide 4 — Sprint A Aanbod','Slide 5 — CTA'],
+    ph:['De pijn in één zin. Bijv. "73% van ziekenhuizen verliest 2+ uur per arts per dag aan admin"','Kopieer je PMC waardepropositie formule hier','Case study, benchmark resultaat, of referentie klant','Naam, duur, deliverables, investering van Sprint A','Welke actie? Meeting boeken, assessment starten, demo?'],
+    variants:['<strong>Presentatie versie:</strong> 5 slides met speaker notes. Gebruik voor live meetings en video calls','<strong>Leave-behind versie:</strong> Dezelfde 5 slides met uitgebreide tekst. Standalone leesbaar, geen presentator nodig','<strong>One-pager:</strong> Condense deck naar A4. Voor email bijlage of na meeting recap'],
+    tip:'Sprint A is altijd je CTA. Nooit "laten we bellen". Altijd een concreet, laagdrempelig aanbod: assessment, scan, workshop.',
+    tools:['Pitch Canvas','Slide Templates','One-Pager','Speaker Notes']},
+  s2:{title:'CRM Pipeline Setup',desc:'Pipeline stadia, lead scoring, deal tracking en rapportage. Zonder CRM geen zichtbaarheid, zonder zichtbaarheid geen sturing.',
+    blocks:['Pipeline Stadia (6-fase)','CRM Configuratie'],
+    canvas:['Stadium 1 — Lead (0-10%)','Stadium 2 — Qualified (10-25%)','Stadium 3 — Discovery (25-50%)','Stadium 4 — Proposal (50-75%)','Stadium 5 — Negotiation (75-90%)','Stadium 6 — Won / Lost'],
+    ph:['Eerste contact gelegd. Bron geïdentificeerd (Revynu, LinkedIn, event, referral).','ICP match bevestigd. Pain gevalideerd. Budget indicatie verkregen.','Intake gesprek afgerond. Decision makers in kaart. Sprint A gepresenteerd.','Offerte uitgebracht. Commerciële voorwaarden besproken. Tijdlijn afgestemd.','Juridisch/procurement. Contractonderhandeling. Interne goedkeuring klant.','Deal gesloten of verloren. Win/loss analyse documenteren.'],
+    actions:['<strong>CRM Platform:</strong> HubSpot Starter (€20/mo) of Dynamics 365 (bestaand bij klant)','<strong>Custom velden:</strong> ICP Score, Segment, Bron, Revynu Status, Sprint Type','<strong>Lead scoring:</strong> Firmographic (sector, omvang) + Behavioral (email opens, clicks, benchmark deelname)','<strong>Rapportage:</strong> Wekelijkse pipeline review, maandelijkse conversion funnel, kwartaal forecast','<strong>Integratie:</strong> Email tracking, LinkedIn (via HeyReach), calendar booking'],
+    tip:'Begin simpel. 6 stadia, 5 custom velden, 1 wekelijks rapport. Complexiteit toevoegen als de pipeline groeit. De HCI database (6.339 contacten) kan als startpunt dienen na cleanup.',
+    tools:['HubSpot Setup','Pipeline Template','Lead Scoring Matrix','Report Templates']},
+  s3:{title:'Campaign in a Box',desc:'Alle outreach materialen in één pakket. Email sequences, LinkedIn berichten, phone scripts, en Revynu benchmark setup. Plug-and-play campagne-kit.',
+    blocks:['Multi-Channel Campagne Componenten','Email Sequence Opbouw','LinkedIn Cadence'],
+    channels:[['📧','Email Sequences','4-6 emails','Koude outreach + follow-up + nurture flows'],['💼','LinkedIn Cadence','5-8 touchpoints','Connect + InMail + engagement + content'],['📞','Phone Scripts','3 varianten','Cold call + warm follow-up + voicemail'],['📊','Revynu Benchmark','62% response','Benchmark report als warm intro instrument']],
+    emailCanvas:['Email 1 — Pain Trigger (Dag 1)','Email 2 — Benchmark Invite (Dag 4)','Email 3 — Social Proof (Dag 8)','Email 4 — CTA (Dag 12)'],
+    emailPh:['Subject line: pijn-gebaseerd. Body: herkenbare situatie + vraag. Geen pitch.','Revynu benchmark uitnodiging als waardevolle content. Geen directe verkoop.','Case study of referentie die relevant is voor het segment. Korte, krachtige resultaten.','Directe uitnodiging voor gesprek. Laagdrempelig: "15 minuten, geen verplichtingen".'],
+    liCanvas:['Stap 1 — Profile View + Connect','Stap 2 — Welcome + Value (Dag 2)','Stap 3 — Benchmark Invite (Dag 5)','Stap 4 — Meeting Ask (Dag 10)'],
+    liPh:['Bekijk profiel. Stuur connectie verzoek met persoonlijke noot (max 300 tekens).','Bedank voor connectie. Deel relevante content of inzicht. Geen pitch.','Nodig uit voor Revynu benchmark. Positioneer als "gratis inzicht" niet als verkooptool.','Directe vraag voor gesprek. Refereer aan benchmark of eerder gedeelde content.'],
+    tip:'De Revynu benchmark convergeert alle kanalen. Email EN LinkedIn verwijzen naar dezelfde benchmark. Dit creëert multi-touch zonder repetitief te zijn.',
+    tools:['Email Templates','LinkedIn Scripts','Phone Scripts','Revynu Setup','Smartlead / Instantly']},
+  s4:{title:'Database Voorbereiding',desc:'Geen outreach zonder schone data. ICP segmentatie, email enrichment, LinkedIn matching, en engagement tracking opzetten.',
+    blocks:['Data Cleanup Stappenplan','Database Kwaliteitsmetrieken'],
+    actions:['<strong>Stap 1 — Deduplicatie:</strong> Verwijder dubbele contacten (naam + organisatie combinatie). Check op verouderde bedrijfsnamen','<strong>Stap 2 — ICP Herscoring:</strong> Pas ICP scores aan op basis van PMC doelmarkt. A-Enterprise, B-Mid-Market, C-Standaard','<strong>Stap 3 — Email Enrichment:</strong> Vul ontbrekende emails aan via Apollo, Hunter.io, of Clearbit. Target: >80% dekking','<strong>Stap 4 — LinkedIn Matching:</strong> Koppel contacten aan LinkedIn profielen. Essentieel voor multi-channel outreach','<strong>Stap 5 — Segmentatie:</strong> Label contacten per industrie, functie, en beslissingsbevoegdheid','<strong>Stap 6 — Import naar CRM:</strong> Schone data importeren in HubSpot/Dynamics met alle custom velden'],
+    canvas:['Totaal Contacten','Email Dekking (%)','LinkedIn Match (%)','ICP A-Contacten','Engagement Baseline'],
+    ph:['Na cleanup. Hoeveel unieke, relevante contacten?','Target: >80%. Huidig: check na enrichment','Target: >60%. Nodig voor multi-channel cadence','Hoeveel enterprise-grade targets na herscoring?','Bestaande relaties, eerdere interacties, warm vs koud?'],
+    tip:'Begin met je Top-50 accounts (ICP A). Handmatig enrichen en valideren. De rest automatiseren via tooling. Kwaliteit > kwantiteit bij de eerste campagneronde.',
+    tools:['Apollo.io','Hunter.io','Clay','HubSpot Import','n8n Automation']},
+  s5:{title:'Sales Enablement Kit',desc:'Alle materialen die je salesteam of partner nodig heeft om autonoom te opereren. Battle cards, objection handling, en referentie materiaal.',
+    blocks:['Enablement Documenten','Per Document Invullen','GTM Readiness Checklist'],
+    actions:['<strong>Battle Card (1-pager):</strong> Markt, pijn, oplossing, differentiators, pricing, vs concurrenten. Altijd bij de hand','<strong>Objection Handling Guide:</strong> Top-10 bezwaren + response scripts. "Te duur", "niet nu", "al een leverancier", etc.','<strong>Discovery Questions:</strong> Gestructureerde vragenlijst voor intake/kwalificatie gesprekken. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simpele tool waarmee prospect zijn business case kan doorrekenen','<strong>Reference Sheet:</strong> Klant referenties, case studies, benchmark resultaten per segment','<strong>Proposal Template:</strong> Gestandaardiseerd voorstel met Sprint A/B/C opties, SLA, commerciële voorwaarden'],
+    canvas:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Beschikbare Referenties'],
+    ph:['3 punten waarop je verschilt van alternatieven','Welke bezwaren hoor je het vaakst? Wat is je response?','Welke 5 vragen moet je ALTIJD stellen in een eerste gesprek?','Welke KPI\'s verbeter je? Uren bespaard, kosten gereduceerd, risico verlaagd?','Welke klanten kunnen als referentie dienen? Per segment?'],
+    checklist:['Pitch Deck (5 slides) klaar in twee varianten (presentatie + leave-behind)','CRM pipeline geconfigureerd met stadia, scoring, en rapportage','Campaign in a Box compleet (email + LinkedIn + phone + Revynu)','Database schoongemaakt, verrijkt, en geïmporteerd in CRM','Sales Enablement Kit beschikbaar (battle card, objections, discovery, ROI, template)','Top-50 target accounts geïdentificeerd en gevalideerd','GTM gereed voor overdracht naar <strong>Outreach & Engagement</strong> (Fase 3)'],
+    tools:['Battle Card Template','Objection Guide','ROI Tool','Proposal Template']},
+  welcome:'<p>Welkom bij de GTM module! 🚀</p><p style="margin-top:8px">Ik begeleid je bij het opzetten van je go-to-market materialen:</p><p style="margin-top:8px">🎤 Pitch Deck &nbsp; 📊 CRM Pipeline &nbsp; 📦 Campaign Box<br>🗄️ Database &nbsp; 🛡️ Sales Enablement</p><p style="margin-top:8px">Stel je vraag of gebruik de snelknoppen.</p>'
+},
+en:{
+  back:'← Back to overview',
+  kicker:'Phase 2 — Go-to-Market',
+  title:'GTM <em>Preparation</em>',
+  subtitle:'From PMC to market. Build your pitch deck, set up CRM pipeline, assemble Campaign in a Box, and prepare the database for outreach.',
+  progress:' completed', progressDone:' completed — GTM Complete!',
+  journey:[['PMC Creation ✓','Completed'],['GTM Preparation','5 deliverables'],['Outreach & Engagement','Multi-channel'],['Sales Execution','CMO→FMO']],
+  tabs:[['Pitch','Deck'],['CRM','Pipeline'],['Campaign','in a Box'],['Database','Preparation'],['Sales','Enablement']],
+  prev:'← Previous',
+  navNext:['Next: CRM Pipeline →','Next: Campaign Box →','Next: Database →','Next: Sales Enablement →',''],
+  navPrev:['','← Pitch Deck','← CRM Pipeline','← Campaign Box','← Database'],
+  completBtn:'✓ Complete GTM → Start Outreach',
+  confirmMsg:'GTM Preparation complete! ✓\n\nProceed to Phase 3: Outreach & Engagement?',
+  s1:{title:'Pitch Deck (Max 5 Slides)',desc:'One deck, five slides, zero noise. Everything a prospect needs to present internally. Built on your PMC value proposition.',
+    blocks:['Slide Canvas','Deck Variants'],
+    canvas:['Slide 1 — Headline','Slide 2 — Value Proposition','Slide 3 — Proof Point','Slide 4 — Sprint A Offer','Slide 5 — CTA'],
+    ph:['The pain in one sentence. E.g. "73% of hospitals lose 2+ hours per physician per day on admin"','Copy your PMC value proposition formula here','Case study, benchmark result, or reference client','Name, duration, deliverables, investment of Sprint A','What action? Book meeting, start assessment, demo?'],
+    variants:['<strong>Presentation version:</strong> 5 slides with speaker notes. Use for live meetings and video calls','<strong>Leave-behind version:</strong> Same 5 slides with extended text. Standalone readable, no presenter needed','<strong>One-pager:</strong> Condensed deck to A4. For email attachment or post-meeting recap'],
+    tip:'Sprint A is always your CTA. Never "let\'s have a call". Always a concrete, low-threshold offer: assessment, scan, workshop.',
+    tools:['Pitch Canvas','Slide Templates','One-Pager','Speaker Notes']},
+  s2:{title:'CRM Pipeline Setup',desc:'Pipeline stages, lead scoring, deal tracking and reporting. Without CRM no visibility, without visibility no steering.',
+    blocks:['Pipeline Stages (6-phase)','CRM Configuration'],
+    canvas:['Stage 1 — Lead (0-10%)','Stage 2 — Qualified (10-25%)','Stage 3 — Discovery (25-50%)','Stage 4 — Proposal (50-75%)','Stage 5 — Negotiation (75-90%)','Stage 6 — Won / Lost'],
+    ph:['First contact made. Source identified (Revynu, LinkedIn, event, referral).','ICP match confirmed. Pain validated. Budget indication obtained.','Intake meeting completed. Decision makers mapped. Sprint A presented.','Proposal submitted. Commercial terms discussed. Timeline aligned.','Legal/procurement. Contract negotiation. Client internal approval.','Deal closed or lost. Win/loss analysis documented.'],
+    actions:['<strong>CRM Platform:</strong> HubSpot Starter (€20/mo) or Dynamics 365 (existing at client)','<strong>Custom fields:</strong> ICP Score, Segment, Source, Revynu Status, Sprint Type','<strong>Lead scoring:</strong> Firmographic (sector, size) + Behavioral (email opens, clicks, benchmark participation)','<strong>Reporting:</strong> Weekly pipeline review, monthly conversion funnel, quarterly forecast','<strong>Integration:</strong> Email tracking, LinkedIn (via HeyReach), calendar booking'],
+    tip:'Start simple. 6 stages, 5 custom fields, 1 weekly report. Add complexity as the pipeline grows. The HCI database (6,339 contacts) can serve as starting point after cleanup.',
+    tools:['HubSpot Setup','Pipeline Template','Lead Scoring Matrix','Report Templates']},
+  s3:{title:'Campaign in a Box',desc:'All outreach materials in one package. Email sequences, LinkedIn messages, phone scripts, and Revynu benchmark setup. Plug-and-play campaign kit.',
+    blocks:['Multi-Channel Campaign Components','Email Sequence Structure','LinkedIn Cadence'],
+    channels:[['📧','Email Sequences','4-6 emails','Cold outreach + follow-up + nurture flows'],['💼','LinkedIn Cadence','5-8 touchpoints','Connect + InMail + engagement + content'],['📞','Phone Scripts','3 variants','Cold call + warm follow-up + voicemail'],['📊','Revynu Benchmark','62% response','Benchmark report as warm intro instrument']],
+    emailCanvas:['Email 1 — Pain Trigger (Day 1)','Email 2 — Benchmark Invite (Day 4)','Email 3 — Social Proof (Day 8)','Email 4 — CTA (Day 12)'],
+    emailPh:['Subject line: pain-based. Body: recognizable situation + question. No pitch.','Revynu benchmark invitation as valuable content. No direct sales.','Case study or reference relevant to the segment. Short, powerful results.','Direct invitation for conversation. Low threshold: "15 minutes, no obligations".'],
+    liCanvas:['Step 1 — Profile View + Connect','Step 2 — Welcome + Value (Day 2)','Step 3 — Benchmark Invite (Day 5)','Step 4 — Meeting Ask (Day 10)'],
+    liPh:['View profile. Send connection request with personal note (max 300 chars).','Thank for connection. Share relevant content or insight. No pitch.','Invite to Revynu benchmark. Position as "free insight" not as sales tool.','Direct ask for conversation. Reference benchmark or previously shared content.'],
+    tip:'The Revynu benchmark converges all channels. Email AND LinkedIn point to the same benchmark. This creates multi-touch without being repetitive.',
+    tools:['Email Templates','LinkedIn Scripts','Phone Scripts','Revynu Setup','Smartlead / Instantly']},
+  s4:{title:'Database Preparation',desc:'No outreach without clean data. ICP segmentation, email enrichment, LinkedIn matching, and engagement tracking setup.',
+    blocks:['Data Cleanup Steps','Database Quality Metrics'],
+    actions:['<strong>Step 1 — Deduplication:</strong> Remove duplicate contacts (name + organization combo). Check for outdated company names','<strong>Step 2 — ICP Rescoring:</strong> Adjust ICP scores based on PMC target market. A-Enterprise, B-Mid-Market, C-Standard','<strong>Step 3 — Email Enrichment:</strong> Fill missing emails via Apollo, Hunter.io, or Clearbit. Target: >80% coverage','<strong>Step 4 — LinkedIn Matching:</strong> Map contacts to LinkedIn profiles. Essential for multi-channel outreach','<strong>Step 5 — Segmentation:</strong> Label contacts by industry, function, and decision authority','<strong>Step 6 — Import to CRM:</strong> Import clean data to HubSpot/Dynamics with all custom fields'],
+    canvas:['Total Contacts','Email Coverage (%)','LinkedIn Match (%)','ICP A-Contacts','Engagement Baseline'],
+    ph:['After cleanup. How many unique, relevant contacts?','Target: >80%. Current: check after enrichment','Target: >60%. Required for multi-channel cadence','How many enterprise-grade targets after rescoring?','Existing relationships, prior interactions, warm vs cold?'],
+    tip:'Start with your Top-50 accounts (ICP A). Manually enrich and validate. Automate the rest via tooling. Quality > quantity for the first campaign round.',
+    tools:['Apollo.io','Hunter.io','Clay','HubSpot Import','n8n Automation']},
+  s5:{title:'Sales Enablement Kit',desc:'All materials your sales team or partner needs to operate autonomously. Battle cards, objection handling, and reference material.',
+    blocks:['Enablement Documents','Per Document Fill-in','GTM Readiness Checklist'],
+    actions:['<strong>Battle Card (1-pager):</strong> Market, pain, solution, differentiators, pricing, vs competitors. Always at hand','<strong>Objection Handling Guide:</strong> Top-10 objections + response scripts. "Too expensive", "not now", "already have a vendor", etc.','<strong>Discovery Questions:</strong> Structured questionnaire for intake/qualification meetings. BANT + MEDDPICC light','<strong>ROI Calculator:</strong> Simple tool for prospect to calculate their business case','<strong>Reference Sheet:</strong> Client references, case studies, benchmark results per segment','<strong>Proposal Template:</strong> Standardized proposal with Sprint A/B/C options, SLA, commercial terms'],
+    canvas:['Battle Card — Key Differentiators','Top-3 Objections','Discovery — Must-Ask Questions','ROI Metrics','Available References'],
+    ph:['3 points where you differ from alternatives','Which objections do you hear most? What is your response?','Which 5 questions must you ALWAYS ask in a first meeting?','Which KPIs do you improve? Hours saved, costs reduced, risk lowered?','Which clients can serve as reference? Per segment?'],
+    checklist:['Pitch Deck (5 slides) ready in two variants (presentation + leave-behind)','CRM pipeline configured with stages, scoring, and reporting','Campaign in a Box complete (email + LinkedIn + phone + Revynu)','Database cleaned, enriched, and imported to CRM','Sales Enablement Kit available (battle card, objections, discovery, ROI, template)','Top-50 target accounts identified and validated','GTM ready for handoff to <strong>Outreach & Engagement</strong> (Phase 3)'],
+    tools:['Battle Card Template','Objection Guide','ROI Tool','Proposal Template']},
+  welcome:'<p>Welcome to the GTM module! 🚀</p><p style="margin-top:8px">I\'ll guide you through setting up your go-to-market materials:</p><p style="margin-top:8px">🎤 Pitch Deck &nbsp; 📊 CRM Pipeline &nbsp; 📦 Campaign Box<br>🗄️ Database &nbsp; 🛡️ Sales Enablement</p><p style="margin-top:8px">Ask your question or use the quick buttons.</p>'
+}
+};
+
+function applyPageLang(l){
+  pageLang=l;const t=pageI18n[l];
+  /* Hero */
+  document.querySelector('.back-link').textContent=t.back;
+  document.querySelector('.kicker').textContent=t.kicker;
+  document.querySelector('.page-hero h1').innerHTML=t.title;
+  document.querySelector('.subtitle').textContent=t.subtitle;
+  /* Journey */
+  const jp=document.querySelectorAll('.journey-phase');
+  jp.forEach((p,i)=>{if(t.journey[i]){p.querySelector('.jp-text').childNodes[0].textContent=t.journey[i][0];const sub=p.querySelector('.jp-sub');if(sub)sub.textContent=t.journey[i][1]}});
+  /* Progress */
+  const pl=document.getElementById('progressLabel');
+  if(completedSteps.size<totalSteps)pl.textContent=completedSteps.size+' / '+totalSteps+t.progress;
+  else pl.textContent=totalSteps+' / '+totalSteps+t.progressDone;
+  /* Tabs */
+  document.querySelectorAll('.step-tab').forEach((tab,i)=>{if(t.tabs[i]){const lbl=tab.querySelector('.st-label');lbl.innerHTML=t.tabs[i][0]+'<br>'+t.tabs[i][1]}});
+  /* Steps */
+  const steps=[t.s1,t.s2,t.s3,t.s4,t.s5];
+  document.querySelectorAll('.step-panel').forEach((panel,si)=>{
+    const s=steps[si];if(!s)return;
+    /* Header */
+    const h2=panel.querySelector('h2');if(h2)h2.textContent=s.title;
+    const sd=panel.querySelector('.step-desc');if(sd)sd.textContent=s.desc;
+    /* Block titles */
+    const bt=panel.querySelectorAll('.block-title');
+    if(s.blocks)bt.forEach((b,i)=>{if(s.blocks[i]){const sp=b.querySelector('.bt-dot');b.innerHTML='';if(sp)b.appendChild(sp);else{const ns=document.createElement('span');ns.className='bt-dot';b.appendChild(ns)}b.appendChild(document.createTextNode(' '+s.blocks[i]))}});
+    /* Canvas labels + placeholders */
+    const cf=panel.querySelectorAll('.canvas-field');
+    let ci=0;
+    if(s.canvas){cf.forEach((f,fi)=>{
+      /* Skip canvas fields inside the second block for steps that have actions */
+      if(ci<s.canvas.length){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.canvas[ci];
+      if(s.ph&&s.ph[ci]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.ph[ci]}ci++}
+    })}
+    /* Action lists */
+    const al=panel.querySelectorAll('.action-list');
+    if(s.actions&&al.length>0){const items=al[0].querySelectorAll('li');items.forEach((li,i)=>{if(s.actions[i])li.innerHTML=s.actions[i]})}
+    if(s.checklist&&al.length>1){const items=al[al.length-1].querySelectorAll('li');items.forEach((li,i)=>{if(s.checklist[i])li.innerHTML=s.checklist[i]})}
+    else if(s.checklist&&al.length===1&&si===4){const items=al[0].querySelectorAll('li');items.forEach((li,i)=>{if(s.checklist[i])li.innerHTML=s.checklist[i]})}
+    /* Variants (step 1 only) */
+    if(s.variants){const vl=panel.querySelectorAll('.action-list');if(vl.length>0){const items=vl[0].querySelectorAll('li');items.forEach((li,i)=>{if(s.variants[i])li.innerHTML=s.variants[i]})}}
+    /* Channel cards (step 3 only) */
+    if(s.channels){panel.querySelectorAll('.ch-card').forEach((c,i)=>{if(s.channels[i]){c.querySelector('.ch-name').textContent=s.channels[i][1];c.querySelector('.ch-stat').textContent=s.channels[i][2];c.querySelector('.ch-desc').textContent=s.channels[i][3]}})}
+    /* Email canvas (step 3) */
+    if(s.emailCanvas){const blocks=panel.querySelectorAll('.block');
+      if(blocks.length>1){const ecf=blocks[1].querySelectorAll('.canvas-field');ecf.forEach((f,i)=>{if(s.emailCanvas[i]){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.emailCanvas[i]}if(s.emailPh&&s.emailPh[i]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.emailPh[i]}})}
+      if(blocks.length>2){const lcf=blocks[2].querySelectorAll('.canvas-field');lcf.forEach((f,i)=>{if(s.liCanvas&&s.liCanvas[i]){const lb=f.querySelector('.canvas-label');if(lb)lb.textContent=s.liCanvas[i]}if(s.liPh&&s.liPh[i]){const v=f.querySelector('.canvas-value');if(v)v.textContent=s.liPh[i]}})}}
+    /* Tip */
+    const tip=panel.querySelector('.tip-text');
+    if(tip&&s.tip)tip.innerHTML='<strong>HCI Tip:</strong> '+s.tip;
+    /* Tool pills */
+    if(s.tools){panel.querySelectorAll('.tool-pill').forEach((p,i)=>{if(s.tools[i])p.textContent=s.tools[i]})}
+    /* Nav buttons */
+    const navBtns=panel.querySelectorAll('.nav-btn');
+    if(navBtns.length>=2){
+      if(si===0){navBtns[0].textContent=t.prev;navBtns[1].textContent=t.navNext[si]}
+      else if(si===4){navBtns[0].textContent=t.navPrev[si];navBtns[1].textContent=t.completBtn}
+      else{navBtns[0].textContent=t.navPrev[si];navBtns[1].textContent=t.navNext[si]}
+    }
+  });
+  /* AI welcome */
+  const firstMsg=document.querySelector('#aiChat .ai-msg.assistant .ai-msg-body');
+  if(firstMsg)firstMsg.innerHTML=t.welcome;
+}
+
+
+function setPageLang(l){document.getElementById('mainLangNL').classList.toggle('active',l==='nl');document.getElementById('mainLangEN').classList.toggle('active',l==='en');setAILang(l);applyPageLang(l)}
 
 let aiRec=null,aiRecording=false;
 if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;aiRec=new SR();aiRec.lang='nl-NL';aiRec.continuous=false;aiRec.interimResults=false;
