@@ -209,7 +209,7 @@ header{padding:20px 40px;display:flex;align-items:center;justify-content:space-b
     <div class="journey-connector"></div>
     <div class="journey-phase" style="background:var(--active-dim)"><div class="jp-dot" style="border-color:var(--phase-outreach);background:var(--phase-outreach)"></div><div><div class="jp-text" style="color:var(--phase-outreach)">Outreach & Engagement</div><div class="jp-sub">5 kanalen</div></div></div>
     <div class="journey-connector"></div>
-    <div class="journey-phase"><div class="jp-dot" style="border-color:var(--text-dim)"></div><div><div class="jp-text" style="color:var(--text-dim)">Sales Executie</div><div class="jp-sub">CMO→FMO</div></div></div>
+    <a href="/sales" class="journey-phase" style="cursor:pointer"><div class="jp-dot" style="border-color:#C8A55A"></div><div><div class="jp-text" style="color:#C8A55A">Sales Executie</div><div class="jp-sub">CMO→FMO</div></div></a>
   </div>
 
   <div class="progress-bar"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="progress-label" id="progressLabel">0 / 5 afgerond</div></div>
@@ -434,7 +434,7 @@ document.querySelector('.container').scrollIntoView({behavior:'smooth',block:'st
 function completeOutreach(){completedSteps.add(4);document.getElementById('progressFill').style.width='100%';
 document.getElementById('progressLabel').textContent=pageLang==='en'?'5 / 5 completed — Outreach Complete!':'5 / 5 afgerond — Outreach Compleet!';document.getElementById('progressLabel').style.color='var(--success)';
 document.querySelectorAll('.step-tab').forEach(t=>{t.classList.remove('active');t.classList.add('completed')});
-alert(pageLang==='en'?'Outreach & Engagement complete! ✓\n\nReady for Phase 4: Sales Execution.\nThis module will be added soon.':'Outreach & Engagement afgerond! ✓\n\nGereed voor Fase 4: Sales Executie.\nDeze module wordt binnenkort toegevoegd.')}
+alert(pageLang==='en'?'Outreach & Engagement complete! ✓\n\nContinuing to Phase 4: Sales Execution.':'Outreach & Engagement afgerond! ✓\n\nDoorsturen naar Fase 4: Sales Executie.');window.location.href='/sales'}
 
 /* ═══ AI ═══ */
 let aiLang='nl',aiHistory=[],aiOpen=false;
