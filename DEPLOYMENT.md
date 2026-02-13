@@ -9,7 +9,8 @@ hci-modules/
 ├── public/
 │   ├── index.html        ← Landing page / module hub
 │   ├── pmc.html          ← PMC Creatie Module + AI
-│   └── gtm.html          ← GTM Voorbereiding Module + AI
+│   ├── gtm.html          ← GTM Voorbereiding Module + AI
+│   └── outreach.html     ← Outreach & Engagement Module + AI
 └── netlify/
     └── functions/
         └── chat.js       ← Claude API proxy (server-side, veilig)
@@ -24,7 +25,7 @@ hci-modules/
 cd hci-modules
 git init
 git add .
-git commit -m "Initial: PMC + GTM modules met AI assistant"
+git commit -m "HCI Modules: PMC + GTM + Outreach met AI assistant"
 git remote add origin https://github.com/JOUW-USERNAME/hci-modules.git
 git push -u origin main
 ```
@@ -63,11 +64,11 @@ git push -u origin main
 | `/` | Landing page met module overzicht |
 | `/pmc` | PMC Creatie Module (Fase 1) |
 | `/gtm` | GTM Voorbereiding Module (Fase 2) |
+| `/outreach` | Outreach & Engagement Module (Fase 3) |
 | `/api/chat` | Claude API endpoint (intern) |
 
 ## Toekomstige Modules
 
-- `/outreach` — Outreach & Engagement (Fase 3)
 - `/sales` — Sales Executie (Fase 4)
 
 ## Kosten
