@@ -73,10 +73,7 @@ footer a{color:var(--hci-gold);text-decoration:none}
 
 <header>
   <div class="hci-logo"><div class="hci-mark">HCI</div><div class="hci-name">HES Consultancy International</div></div>
-  <div style="display:flex;align-items:center;gap:16px">
-    <div class="lang-toggle"><button class="lang-btn active" id="langNL" onclick="setLang('nl')">NL</button><button class="lang-btn" id="langEN" onclick="setLang('en')">EN</button></div>
-    <div class="hci-badge" id="hciBadge">FROM STRATEGY TO FIRST CUSTOMER</div>
-  </div>
+  <div style="display:flex;align-items:center;gap:14px"><div class="lang-toggle"><button class="lang-btn active" id="langNL" onclick="setLang('nl')">NL</button><button class="lang-btn" id="langEN" onclick="setLang('en')">EN</button></div><div class="hci-badge">FROM STRATEGY TO FIRST CUSTOMER</div></div>
 </header>
 
 <div class="container">
@@ -136,47 +133,33 @@ footer a{color:var(--hci-gold);text-decoration:none}
   <p>© 2026 <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> · 30+ jaar ervaring in Europese marktintroductie</p>
 </footer>
 <script>
-const i18n={
-nl:{
-  kicker:'Client Engagement Platform',
-  title:'From Strategy to <em>First Customer</em>',
-  subtitle:'Modulaire, AI-ondersteunde werkmodules die je stap voor stap begeleiden van propositie tot deal close. Elk met een ingebouwde AI Assistant.',
-  journey:[['PMC Creatie','5 bouwstenen'],['GTM Voorbereiding','Pitch, CRM, Campaign Box'],['Outreach & Engagement','Multi-channel'],['Sales Executie','CMO→FMO']],
-  mods:[
-    {title:'PMC Creatie',sub:'Fase 1 · Onboarding',desc:'Product-Markt Combinatie definiëren. Doelmarkt, kernprobleem, waardepropositie, offer packaging en partnership alignment.',status:'● LIVE'},
-    {title:'GTM Voorbereiding',sub:'Fase 2 · Go-to-Market',desc:'Pitch deck, CRM pipeline setup, Campaign in a Box, database voorbereiding en sales enablement materiaal.',status:'● LIVE'},
-    {title:'Outreach & Engagement',sub:'Fase 3 · Multi-channel',desc:'Email sequences, LinkedIn campagnes, Revynu benchmark engagement, telefoon scripts en event planning.',status:'● LIVE'},
-    {title:'Sales Executie',sub:'Fase 4 · Deal Close',desc:'CMO→FMO methodologie, proposal templates, negotiation playbook, vendor co-sell activatie.',status:'○ GEPLAND'}
-  ],
-  ai:'Elke module bevat een <strong>AI Assistant powered by Claude</strong> — context-aware begeleiding bij elke stap, in het Nederlands en Engels.',
-  footer:'© 2026 <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> · 30+ jaar ervaring in Europese marktintroductie'
-},
-en:{
-  kicker:'Client Engagement Platform',
-  title:'From Strategy to <em>First Customer</em>',
-  subtitle:'Modular, AI-assisted work modules that guide you step by step from proposition to deal close. Each with a built-in AI Assistant.',
-  journey:[['PMC Creation','5 building blocks'],['GTM Preparation','Pitch, CRM, Campaign Box'],['Outreach & Engagement','Multi-channel'],['Sales Execution','CMO→FMO']],
-  mods:[
-    {title:'PMC Creation',sub:'Phase 1 · Onboarding',desc:'Define Product-Market Combination. Target market, core problem, value proposition, offer packaging and partnership alignment.',status:'● LIVE'},
-    {title:'GTM Preparation',sub:'Phase 2 · Go-to-Market',desc:'Pitch deck, CRM pipeline setup, Campaign in a Box, database preparation and sales enablement materials.',status:'● LIVE'},
-    {title:'Outreach & Engagement',sub:'Phase 3 · Multi-channel',desc:'Email sequences, LinkedIn campaigns, Revynu benchmark engagement, phone scripts and event planning.',status:'● LIVE'},
-    {title:'Sales Execution',sub:'Phase 4 · Deal Close',desc:'CMO→FMO methodology, proposal templates, negotiation playbook, vendor co-sell activation.',status:'○ PLANNED'}
-  ],
-  ai:'Each module includes an <strong>AI Assistant powered by Claude</strong> — context-aware guidance at every step, in Dutch and English.',
-  footer:'© 2026 <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> · 30+ years experience in European market entry'
-}
+var i18n={
+nl:{subtitle:'Modulaire, AI-ondersteunde werkmodules die je stap voor stap begeleiden van propositie tot deal close. Elk met een ingebouwde AI Assistant.',
+  journey:[['PMC Creatie','5 bouwstenen'],['GTM Voorbereiding','Pitch, CRM, Campaign Box'],['Outreach & Engagement','Multi-channel'],['Sales Executie','CMO\u2192FMO']],
+  titles:['PMC Creatie','GTM Voorbereiding','Outreach & Engagement','Sales Executie'],
+  subs:['Fase 1 \u00b7 Onboarding','Fase 2 \u00b7 Go-to-Market','Fase 3 \u00b7 Multi-channel','Fase 4 \u00b7 Deal Close'],
+  descs:['Product-Markt Combinatie defini\u00ebren. Doelmarkt, kernprobleem, waardepropositie, offer packaging en partnership alignment.','Pitch deck, CRM pipeline setup, Campaign in a Box, database voorbereiding en sales enablement materiaal.','Email sequences, LinkedIn campagnes, Revynu benchmark engagement, telefoon scripts en event planning.','CMO\u2192FMO methodologie, proposal templates, negotiation playbook, vendor co-sell activatie.'],
+  statuses:['\u25cf LIVE','\u25cf LIVE','\u25cf LIVE','\u25cb GEPLAND'],
+  ai:'Elke module bevat een <strong>AI Assistant powered by Claude</strong> \u2014 context-aware begeleiding bij elke stap, in het Nederlands en Engels.',
+  footer:'\u00a9 2026 <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> \u00b7 30+ jaar ervaring in Europese marktintroductie'},
+en:{subtitle:'Modular, AI-assisted work modules that guide you step by step from proposition to deal close. Each with a built-in AI Assistant.',
+  journey:[['PMC Creation','5 building blocks'],['GTM Preparation','Pitch, CRM, Campaign Box'],['Outreach & Engagement','Multi-channel'],['Sales Execution','CMO\u2192FMO']],
+  titles:['PMC Creation','GTM Preparation','Outreach & Engagement','Sales Execution'],
+  subs:['Phase 1 \u00b7 Onboarding','Phase 2 \u00b7 Go-to-Market','Phase 3 \u00b7 Multi-channel','Phase 4 \u00b7 Deal Close'],
+  descs:['Define Product-Market Combination. Target market, core problem, value proposition, offer packaging and partnership alignment.','Pitch deck, CRM pipeline setup, Campaign in a Box, database preparation and sales enablement materials.','Email sequences, LinkedIn campaigns, Revynu benchmark engagement, phone scripts and event planning.','CMO\u2192FMO methodology, proposal templates, negotiation playbook, vendor co-sell activation.'],
+  statuses:['\u25cf LIVE','\u25cf LIVE','\u25cf LIVE','\u25cb PLANNED'],
+  ai:'Each module includes an <strong>AI Assistant powered by Claude</strong> \u2014 context-aware guidance at every step, in Dutch and English.',
+  footer:'\u00a9 2026 <a href="https://hes-consultancy-international.com" target="_blank">HES Consultancy International</a> \u00b7 30+ years experience in European market entry'}
 };
 function setLang(l){
   document.getElementById('langNL').classList.toggle('active',l==='nl');
   document.getElementById('langEN').classList.toggle('active',l==='en');
-  const t=i18n[l];
-  document.querySelector('.kicker').textContent=t.kicker;
-  document.querySelector('.hero h1').innerHTML=t.title;
-  document.querySelector('.hero p').textContent=t.subtitle;
-  document.querySelectorAll('.j-phase').forEach((p,i)=>{if(t.journey[i]){p.querySelector('.j-text').textContent=t.journey[i][0];p.querySelector('.j-sub').textContent=t.journey[i][1]}});
-  document.querySelectorAll('.mod-card').forEach((c,i)=>{if(t.mods[i]){c.querySelector('.mod-title').textContent=t.mods[i].title;c.querySelector('.mod-sub').textContent=t.mods[i].sub;c.querySelector('.mod-desc').textContent=t.mods[i].desc;c.querySelector('.mod-status').textContent=t.mods[i].status}});
-  document.querySelector('.ai-strip p').innerHTML=t.ai;
-  document.querySelector('footer p').innerHTML=t.footer;
+  var t=i18n[l];if(!t)return;
+  var p=document.querySelector('.hero p');if(p)p.textContent=t.subtitle;
+  document.querySelectorAll('.j-phase').forEach(function(ph,i){if(t.journey[i]){var tx=ph.querySelector('.j-text');if(tx)tx.textContent=t.journey[i][0];var su=ph.querySelector('.j-sub');if(su)su.textContent=t.journey[i][1];}});
+  document.querySelectorAll('.mod-card').forEach(function(c,i){var ti=c.querySelector('.mod-title');if(ti&&t.titles[i])ti.textContent=t.titles[i];var su=c.querySelector('.mod-sub');if(su&&t.subs[i])su.textContent=t.subs[i];var de=c.querySelector('.mod-desc');if(de&&t.descs[i])de.textContent=t.descs[i];var st=c.querySelector('.mod-status');if(st&&t.statuses[i])st.textContent=t.statuses[i];});
+  var ai=document.querySelector('.ai-strip p');if(ai)ai.innerHTML=t.ai;
+  var ft=document.querySelector('footer p');if(ft)ft.innerHTML=t.footer;
 }
 </script>
 </body>

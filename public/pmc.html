@@ -466,14 +466,14 @@ let aiLang='nl',aiHistory=[],aiOpen=false;
 
 const aiTxt={nl:{ph:'Stel je vraag over de PMC...',send:'Verstuur',ctxPre:'Stap',qa:[{l:'💡 Help bij deze stap',k:'help'},{l:'📝 Geef voorbeeld',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Leg uit wat ik moet doen in deze stap en geef praktische tips.',example:'Geef een concreet ingevuld voorbeeld voor deze PMC stap, voor een B2B tech bedrijf dat de EU markt betreedt.',review:'Wat zijn de meest voorkomende fouten bij deze stap? Waar moet ik op letten?'},
-err:'⚠️ Kon geen verbinding maken met Claude. Probeer opnieuw.',
+err:'⚠️ Kon geen verbinding maken. Probeer opnieuw.',
 u:'Jij',a:'HCI Assistant',sl:'nl-NL',vd:'Microfoon geweigerd.',vu:'Spraak niet ondersteund. Probeer Chrome.'},
 en:{ph:'Ask about the PMC...',send:'Send',ctxPre:'Step',qa:[{l:'💡 Help with step',k:'help'},{l:'📝 Show example',k:'example'},{l:'✅ Review checklist',k:'review'}],
 qm:{help:'Explain what I need to do in this step and give practical tips.',example:'Give a concrete example for this PMC step, for a B2B tech company entering the EU market.',review:'What are common mistakes in this step? What should I watch out for?'},
-err:'⚠️ Could not connect to Claude. Try again.',
+err:'⚠️ Could not connect. Try again.',
 u:'You',a:'HCI Assistant',sl:'en-GB',vd:'Microphone denied.',vu:'Speech not supported. Try Chrome.'}};
 
-const API_ENDPOINT='/api/chat';
+const API_ENDPOINT = '/api/chat';
 
 function getSysPrompt(){const s=currentStep+1,sn=stepNames[aiLang][currentStep],l=aiLang==='nl'?'Dutch':'English';
 return `You are the HCI AI Assistant in the PMC (Product-Market Combination) Creation Module of HES Consultancy International.
@@ -497,8 +497,7 @@ function updateCtx(){const t=aiTxt[aiLang],sn=stepNames[aiLang][currentStep];doc
 function setAILang(l){aiLang=l;const t=aiTxt[l];document.getElementById('aiLangNL').classList.toggle('active',l==='nl');document.getElementById('aiLangEN').classList.toggle('active',l==='en');
 document.getElementById('aiInput').placeholder=t.ph;document.getElementById('aiSendBtn').textContent=t.send;
 document.getElementById('aiQA').innerHTML=t.qa.map(a=>`<button class="ai-quick-btn" onclick="aiQuick('${a.k}')">${a.l}</button>`).join('');
-updateCtx();if(aiRec)aiRec.lang=t.sl;
-if(pageLang!==l){setPageLang(l)}}
+updateCtx();if(aiRec)aiRec.lang=t.sl}
 
 /* Voice */
 let aiRec=null,aiRecording=false;
@@ -574,9 +573,9 @@ nl:{
     funding:'Funding & Incentives',fList:['<strong>Vendor funding:</strong> MCI, Azure Accelerate, AWS Credits','<strong>Co-sell:</strong> Marketplace, referral program','<strong>EU funding:</strong> Subsidies, WBSO/RDA','<strong>Sector:</strong> SURF, ZonMw, etc.','<strong>Portal:</strong> Co-sell opportunity, propensity data'],
     tip:'Vendor funding kan Sprint A gratis maken voor de klant.',
     check:'PMC Completeness Checklist',checkList:['Doelmarkt gedefinieerd en gescoord','Kernprobleem gevalideerd (min. 2 bronnen)','Waardepropositie geformuleerd en getest','A-B-C packaging met pricing','Vendor alignment en funding routes','Top-10/20 target accounts','PMC gereed voor <strong>GTM Voorbereiding</strong>'],
-    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']},
-  welcome:'<p>Welkom! 👋 Ik ben de HCI AI Assistant.</p><p style="margin-top:8px">Ik begeleid je bij elke PMC stap met context-aware advies:</p><p style="margin-top:8px">🎯 Doelmarkt &nbsp; 🔥 Pain &nbsp; 💎 Waardepropositie<br>📦 Offer Packaging &nbsp; 🤝 Partnerships</p><p style="margin-top:8px">Gebruik de snelknoppen of stel je vraag.</p>'
+    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']}
 },
+en:{
   kicker:'Phase 1 — Onboarding Module', title:'Product-Market Combination <em>Creation</em>',
   subtitle:'From strategy to a validated, market-ready proposition. 5 building blocks completed sequentially — each with concrete deliverables.',
   progress:' completed', progressDone:' completed — PMC Complete!',
@@ -617,8 +616,7 @@ nl:{
     funding:'Funding & Incentives',fList:['<strong>Vendor funding:</strong> MCI, Azure Accelerate, AWS Credits','<strong>Co-sell:</strong> Marketplace, referral programme','<strong>EU funding:</strong> Subsidies, R&D tax credits','<strong>Sector:</strong> SURF, ZonMw, etc.','<strong>Portal:</strong> Co-sell opportunity, propensity data'],
     tip:'Vendor funding can make Sprint A effectively free for the client.',
     check:'PMC Completeness Checklist',checkList:['Target market defined and scored','Core problem validated (min. 2 sources)','Value proposition formulated and tested','A-B-C packaging with pricing','Vendor alignment and funding routes','Top-10/20 target accounts','PMC ready for <strong>GTM Preparation</strong>'],
-    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']},
-  welcome:'<p>Welcome! 👋 I\'m the HCI AI Assistant.</p><p style="margin-top:8px">I\'ll guide you through each PMC step with context-aware advice:</p><p style="margin-top:8px">🎯 Target Market &nbsp; 🔥 Pain &nbsp; 💎 Value Proposition<br>📦 Offer Packaging &nbsp; 🤝 Partnerships</p><p style="margin-top:8px">Use the quick buttons or ask your question.</p>'
+    tools:['Partnership Canvas','Funding Guide','Vendor Portal','HCI Network']}
 }};
 
 function setPageLang(l){
@@ -645,8 +643,6 @@ function applyPageLang(){
   document.querySelectorAll('.journey-phase').forEach((el,i)=>{const jp=el.querySelectorAll('.jp-text,.jp-sub');if(t.journey[i]){jp[0].textContent=t.journey[i][0];jp[1].textContent=t.journey[i][1]}});
   // Steps content — dynamically update each step panel
   rebuildStep(0,t.s1,t);rebuildStep(1,t.s2,t);rebuildStep(2,t.s3,t);rebuildStep(3,t.s4,t);rebuildStep(4,t.s5,t);
-  // AI welcome
-  if(t.welcome){const wm=document.querySelector('#aiChat .ai-msg.assistant .ai-msg-body');if(wm)wm.innerHTML=t.welcome}
 }
 
 function rebuildStep(idx,s,t){
@@ -660,83 +656,65 @@ function rebuildStep(idx,s,t){
   if(btns[1])btns[1].innerHTML=idx===4?t.completBtn:t.navNext[idx];
   // Tools
   const tools=s.tools;if(tools){const tr=panel.querySelector('.tools-row');if(tr)tr.innerHTML=tools.map(x=>`<span class="tool-pill">${x}</span>`).join('')}
-  // Tips — update all tip-text elements in this panel
-  if(s.tip){panel.querySelectorAll('.tip-text').forEach(tip=>{tip.innerHTML=`<strong>HCI Tip:</strong> ${s.tip}`})}
-  // Block titles
-  const blocks=panel.querySelectorAll('.block');const allBT=panel.querySelectorAll('.block-title');
-  // Step 1: Doelmarkt
-  if(idx===0){
-    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.canvas}`;
-    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.scoring}`;
-    // Canvas labels + placeholders
-    const cf=blocks[0]?blocks[0].querySelectorAll('.canvas-field'):[];
-    cf.forEach((f,i)=>{if(s.labels&&s.labels[i]){f.querySelector('.canvas-label').textContent=s.labels[i]}if(s.ph&&s.ph[i]){f.querySelector('.canvas-value').textContent=s.ph[i]}});
-    // Score grid
-    const sr=panel.querySelectorAll('.score-row:not(.header)');
-    sr.forEach((r,i)=>{if(s.criteria&&s.criteria[i]){r.querySelector('.sr-label').textContent=s.criteria[i]}if(s.help&&s.help[i]){r.querySelector('.sr-help').textContent=s.help[i]}});
-    // Score grid header
-    const hdr=panel.querySelector('.score-row.header');
-    if(hdr){const lbs=hdr.querySelectorAll('div');if(pageLang==='en'){lbs[0].textContent='Criterion';lbs[2].textContent='Weight';lbs[3].textContent='Explanation'}else{lbs[0].textContent='Criterium';lbs[2].textContent='Weging';lbs[3].textContent='Toelichting'}}
-  }
-  // Step 2: Pain
-  if(idx===1){
-    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.pain}`;
-    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.valid}`;
-    // Pain questions
-    const ql=blocks[0]?blocks[0].querySelectorAll('.action-list li'):[];
-    ql.forEach((li,i)=>{if(s.qs&&s.qs[i])li.innerHTML=s.qs[i]});
-    // Validation sources
-    const sl=blocks[1]?blocks[1].querySelectorAll('.action-list li'):[];
-    sl.forEach((li,i)=>{if(s.sources&&s.sources[i])li.innerHTML=s.sources[i]});
-    // DM block title
-    const dmBT=panel.querySelectorAll('.block-title');
-    if(dmBT[2])dmBT[2].innerHTML=`<span class="bt-dot"></span> ${s.dm}`;
-    // DM labels + placeholders
-    const dmFields=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
-    dmFields.forEach((f,i)=>{if(s.dmLabels&&s.dmLabels[i]){f.querySelector('.canvas-label').textContent=s.dmLabels[i]}if(s.dmPh&&s.dmPh[i]){f.querySelector('.canvas-value').textContent=s.dmPh[i]}});
-  }
-  // Step 3: Value Proposition
-  if(idx===2){
-    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.formula}`;
-    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.comp}`;
-    if(allBT[2])allBT[2].innerHTML=`<span class="bt-dot"></span> ${s.test}`;
-    // Component canvas
-    const cf=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
-    cf.forEach((f,i)=>{if(s.compLabels&&s.compLabels[i]){f.querySelector('.canvas-label').textContent=s.compLabels[i]}if(s.compPh&&s.compPh[i]){f.querySelector('.canvas-value').textContent=s.compPh[i]}});
-    // Test checks
-    const cl=blocks[2]?blocks[2].querySelectorAll('.action-list li'):[];
-    cl.forEach((li,i)=>{if(s.checks&&s.checks[i])li.innerHTML=s.checks[i]});
-  }
-  // Step 4: Offer Packaging
-  if(idx===3){
-    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.sprints}`;
-    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.fill}`;
-    if(allBT[2])allBT[2].innerHTML=`<span class="bt-dot"></span> ${s.pricing}`;
-    // Offer cards
-    if(s.cards){panel.querySelectorAll('.offer-card').forEach((c,i)=>{if(s.cards[i]){c.querySelector('.oc-title').textContent=s.cards[i].t;c.querySelector('.oc-dur').textContent=s.cards[i].d;c.querySelector('.oc-desc').textContent=s.cards[i].desc;c.querySelectorAll('.oc-dels li').forEach((li,j)=>{if(s.cards[i].dels&&s.cards[i].dels[j])li.textContent=s.cards[i].dels[j]})}})}
-    // Fill canvas
-    const cf=blocks[1]?blocks[1].querySelectorAll('.canvas-field'):[];
-    cf.forEach((f,i)=>{if(s.fillLabels&&s.fillLabels[i]){f.querySelector('.canvas-label').textContent=s.fillLabels[i]}if(s.fillPh&&s.fillPh[i]){f.querySelector('.canvas-value').textContent=s.fillPh[i]}});
-    // Pricing list
-    const pl=blocks[2]?blocks[2].querySelectorAll('.action-list li'):[];
-    pl.forEach((li,i)=>{if(s.priceList&&s.priceList[i])li.innerHTML=s.priceList[i]});
-  }
-  // Step 5: Partnerships
-  if(idx===4){
-    if(allBT[0])allBT[0].innerHTML=`<span class="bt-dot"></span> ${s.vendor}`;
-    if(allBT[1])allBT[1].innerHTML=`<span class="bt-dot"></span> ${s.funding}`;
-    // Vendor canvas
-    const cf=blocks[0]?blocks[0].querySelectorAll('.canvas-field'):[];
-    cf.forEach((f,i)=>{if(s.vLabels&&s.vLabels[i]){f.querySelector('.canvas-label').textContent=s.vLabels[i]}if(s.vPh&&s.vPh[i]){f.querySelector('.canvas-value').textContent=s.vPh[i]}});
-    // Funding list
-    const fl=blocks[1]?blocks[1].querySelectorAll('.action-list li'):[];
-    fl.forEach((li,i)=>{if(s.fList&&s.fList[i])li.innerHTML=s.fList[i]});
-    // Checklist block title + items
-    const allBlocks=panel.querySelectorAll('.block');
-    if(allBlocks[2]){const chBT=allBlocks[2].querySelector('.block-title');if(chBT)chBT.innerHTML=`<span class="bt-dot"></span> ${s.check}`;
-    const cl=allBlocks[2].querySelectorAll('.action-list li');cl.forEach((li,i)=>{if(s.checkList&&s.checkList[i])li.innerHTML=s.checkList[i]})}
-  }
+  // Tips
+  if(s.tip){const tips=panel.querySelectorAll('.tip-box .tip-text');tips.forEach(tip=>{if(tip.innerHTML.includes('HCI Tip'))tip.innerHTML=`<strong>HCI Tip:</strong> ${s.tip}`})}
 }
+
+/* Deep content rebuild - extends basic rebuildStep safely */
+(function(){
+var _applyOrig=applyPageLang;
+applyPageLang=function(){
+  _applyOrig();
+  var t=pageI18n[pageLang];
+  [['s1',0],['s2',1],['s3',2],['s4',3],['s5',4]].forEach(function(pair){
+    var s=t[pair[0]],idx=pair[1];
+    var panel=document.getElementById('step'+idx);if(!panel||!s)return;
+    var blocks=panel.querySelectorAll('.block');
+    var allBT=panel.querySelectorAll('.block-title');
+    if(idx===0){
+      if(allBT[0]&&s.canvas)allBT[0].innerHTML='<span class="bt-dot"></span> '+s.canvas;
+      if(allBT[1]&&s.scoring)allBT[1].innerHTML='<span class="bt-dot"></span> '+s.scoring;
+      if(blocks[0]&&s.labels){blocks[0].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.labels[i])lb.textContent=s.labels[i];if(vl&&s.ph&&s.ph[i])vl.textContent=s.ph[i];})}
+      panel.querySelectorAll('.score-row:not(.header)').forEach(function(r,i){var lb=r.querySelector('.sr-label');var h=r.querySelector('.sr-help');if(lb&&s.criteria&&s.criteria[i])lb.textContent=s.criteria[i];if(h&&s.help&&s.help[i])h.textContent=s.help[i];});
+      var hdr=panel.querySelector('.score-row.header');if(hdr){var cells=hdr.querySelectorAll('div');if(cells[0])cells[0].textContent=pageLang==='nl'?'Criterium':'Criterion';if(cells[2])cells[2].textContent=pageLang==='nl'?'Weging':'Weight';if(cells[3])cells[3].textContent=pageLang==='nl'?'Toelichting':'Explanation';}
+    }
+    if(idx===1){
+      if(allBT[0]&&s.pain)allBT[0].innerHTML='<span class="bt-dot"></span> '+s.pain;
+      if(allBT[1]&&s.valid)allBT[1].innerHTML='<span class="bt-dot"></span> '+s.valid;
+      if(allBT[2]&&s.dm)allBT[2].innerHTML='<span class="bt-dot"></span> '+s.dm;
+      if(blocks[0]){blocks[0].querySelectorAll('.action-list li').forEach(function(li,i){if(s.qs&&s.qs[i])li.innerHTML=s.qs[i];})}
+      var vBlock=null;allBT.forEach(function(bt,bi){if(bt.textContent.indexOf('Validat')>=0||bt.textContent.indexOf('Decision')>=0||(s.valid&&bt.textContent.indexOf(s.valid.substring(0,8))>=0))vBlock=blocks[bi]||null;});
+      if(!vBlock&&blocks[1])vBlock=blocks[1];
+      if(vBlock){vBlock.querySelectorAll('.action-list li').forEach(function(li,i){if(s.sources&&s.sources[i])li.innerHTML=s.sources[i];});
+        vBlock.querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.dmLabels&&s.dmLabels[i])lb.textContent=s.dmLabels[i];if(vl&&s.dmPh&&s.dmPh[i])vl.textContent=s.dmPh[i];});}
+    }
+    if(idx===2){
+      if(allBT[0]&&s.formula)allBT[0].innerHTML='<span class="bt-dot"></span> '+s.formula;
+      if(allBT[1]&&s.comp)allBT[1].innerHTML='<span class="bt-dot"></span> '+s.comp;
+      if(allBT[2]&&s.test)allBT[2].innerHTML='<span class="bt-dot"></span> '+s.test;
+      if(blocks[1]){blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.compLabels&&s.compLabels[i])lb.textContent=s.compLabels[i];if(vl&&s.compPh&&s.compPh[i])vl.textContent=s.compPh[i];})}
+      if(blocks[2]){blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checks&&s.checks[i])li.innerHTML=s.checks[i];})}
+    }
+    if(idx===3){
+      if(allBT[0]&&s.sprints)allBT[0].innerHTML='<span class="bt-dot"></span> '+s.sprints;
+      if(allBT[1]&&s.fill)allBT[1].innerHTML='<span class="bt-dot"></span> '+s.fill;
+      if(allBT[2]&&s.pricing)allBT[2].innerHTML='<span class="bt-dot"></span> '+s.pricing;
+      if(s.cards){panel.querySelectorAll('.offer-card').forEach(function(c,i){if(!s.cards[i])return;var tt=c.querySelector('.oc-title');if(tt)tt.textContent=s.cards[i].t;var du=c.querySelector('.oc-dur');if(du)du.textContent=s.cards[i].d;var de=c.querySelector('.oc-desc');if(de)de.textContent=s.cards[i].desc;c.querySelectorAll('.oc-dels li').forEach(function(li,j){if(s.cards[i].dels&&s.cards[i].dels[j])li.textContent=s.cards[i].dels[j];});})}
+      if(blocks[1]){blocks[1].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.fillLabels&&s.fillLabels[i])lb.textContent=s.fillLabels[i];if(vl&&s.fillPh&&s.fillPh[i])vl.textContent=s.fillPh[i];})}
+      if(blocks[2]){blocks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.priceList&&s.priceList[i])li.innerHTML=s.priceList[i];})}
+    }
+    if(idx===4){
+      if(allBT[0]&&s.vendor)allBT[0].innerHTML='<span class="bt-dot"></span> '+s.vendor;
+      if(allBT[1]&&s.funding)allBT[1].innerHTML='<span class="bt-dot"></span> '+s.funding;
+      if(blocks[0]){blocks[0].querySelectorAll('.canvas-field').forEach(function(f,i){var lb=f.querySelector('.canvas-label');var vl=f.querySelector('.canvas-value');if(lb&&s.vLabels&&s.vLabels[i])lb.textContent=s.vLabels[i];if(vl&&s.vPh&&s.vPh[i])vl.textContent=s.vPh[i];})}
+      if(blocks[1]){blocks[1].querySelectorAll('.action-list li').forEach(function(li,i){if(s.fList&&s.fList[i])li.innerHTML=s.fList[i];})}
+      var allBlks=panel.querySelectorAll('.block');
+      if(allBlks[2]){var chBT=allBlks[2].querySelector('.block-title');if(chBT&&s.check)chBT.innerHTML='<span class="bt-dot"></span> '+s.check;allBlks[2].querySelectorAll('.action-list li').forEach(function(li,i){if(s.checkList&&s.checkList[i])li.innerHTML=s.checkList[i];});}
+    }
+  });
+};
+})();
+
 </script>
 </body>
 </html>
